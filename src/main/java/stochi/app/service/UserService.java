@@ -6,6 +6,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import stochi.app.config.Constants;
 import stochi.app.domain.Authority;
+import stochi.app.domain.Category;
 import stochi.app.domain.User;
 import stochi.app.repository.AuthorityRepository;
 import stochi.app.repository.UserRepository;
@@ -39,6 +41,9 @@ public class UserService {
 
     private final CacheManager cacheManager;
 
+    @Autowired
+    private CategoryService categoryService;
+
     public UserService(
         UserRepository userRepository,
         PasswordEncoder passwordEncoder,
@@ -49,6 +54,12 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
         this.authorityRepository = authorityRepository;
         this.cacheManager = cacheManager;
+    }
+
+    public float soldeUser(String login) {
+        Optional<User> constants = userRepository.findOneByLogin(login);
+        User value = constants.orElseThrow(() -> new RuntimeException("No such data found"));
+        return value.getSoldeUser();
     }
 
     public Optional<User> activateRegistration(String key) {
@@ -141,6 +152,114 @@ public class UserService {
         authorityRepository.findById(AuthoritiesConstants.USER).ifPresent(authorities::add);
         newUser.setAuthorities(authorities);
         userRepository.save(newUser);
+        newUser.setSoldeUser(userDTO.getSoldeUser());
+        Category cat1 = new Category("Depense", newUser.getLogin(), "Catego", 0f, "Nourritures et boissons", "FFFFF");
+        categoryService.save(cat1);
+        Category cat2 = new Category("Depense", newUser.getLogin(), "Catego", 0f, "Logement", "FFFFF");
+        categoryService.save(cat2);
+        Category cat3 = new Category("Depense", newUser.getLogin(), "Catego", 0f, "Santé", "FFFFF");
+        categoryService.save(cat3);
+        Category cat4 = new Category("Depense", newUser.getLogin(), "Catego", 0f, "Services public", "FFFFF");
+        categoryService.save(cat4);
+        Category cat5 = new Category("Depense", newUser.getLogin(), "Catego", 0f, "Transport", "FFFFF");
+        categoryService.save(cat5);
+        Category cat6 = new Category("Depense", newUser.getLogin(), "Catego", 0f, "Education", "FFFFF");
+        categoryService.save(cat6);
+        Category cat7 = new Category("Depense", newUser.getLogin(), "Catego", 0f, "Loisir", "FFFFF");
+        categoryService.save(cat7);
+        Category cat8 = new Category("Depense", newUser.getLogin(), "Catego", 0f, "Divers", "FFFFF");
+        categoryService.save(cat8);
+        Category cat9 = new Category("Depense", newUser.getLogin(), "Catego", 0f, "Imprévus", "FFFFF");
+        categoryService.save(cat9);
+        Category cat10 = new Category("Depense", newUser.getLogin(), "Nourritures et boissons", 0f, "Alimentation", "FFFFF");
+        categoryService.save(cat10);
+        Category cat11 = new Category("Depense", newUser.getLogin(), "Nourritures et boissons", 0f, "Bar café", "FFFFF");
+        categoryService.save(cat11);
+        Category cat12 = new Category("Depense", newUser.getLogin(), "Nourritures et boissons", 0f, "Restaurant Fast Food", "FFFFF");
+        categoryService.save(cat12);
+        Category cat13 = new Category("Depense", newUser.getLogin(), "Logement", 0f, "Loyer", "FFFFF");
+        categoryService.save(cat13);
+        Category cat14 = new Category("Depense", newUser.getLogin(), "Logement", 0f, "Prêt", "FFFFF");
+        categoryService.save(cat14);
+        Category cat15 = new Category("Depense", newUser.getLogin(), "Logement", 0f, "Taxes", "FFFFF");
+        categoryService.save(cat15);
+        Category cat16 = new Category("Depense", newUser.getLogin(), "Santé", 0f, "Assurances", "FFFFF");
+        categoryService.save(cat16);
+        Category cat17 = new Category("Depense", newUser.getLogin(), "Santé", 0f, "Consultation", "FFFFF");
+        categoryService.save(cat17);
+        Category cat18 = new Category("Depense", newUser.getLogin(), "Santé", 0f, "Médicaments", "FFFFF");
+        categoryService.save(cat18);
+        Category cat19 = new Category("Depense", newUser.getLogin(), "Santé", 0f, "Radiologie", "FFFFF");
+        categoryService.save(cat19);
+        Category cat20 = new Category("Depense", newUser.getLogin(), "Santé", 0f, "Hospitalisation", "FFFFF");
+        categoryService.save(cat20);
+        Category cat21 = new Category("Depense", newUser.getLogin(), "Santé", 0f, "Autre personnel médical", "FFFFF");
+        categoryService.save(cat21);
+        Category cat22 = new Category("Depense", newUser.getLogin(), "Services public", 0f, "Electricité", "FFFFF");
+        categoryService.save(cat22);
+        Category cat23 = new Category("Depense", newUser.getLogin(), "Services public", 0f, "Chauffage", "FFFFF");
+        categoryService.save(cat23);
+        Category cat24 = new Category("Depense", newUser.getLogin(), "Services public", 0f, "Eau", "FFFFF");
+        categoryService.save(cat24);
+        Category cat25 = new Category("Depense", newUser.getLogin(), "Services public", 0f, "Téléphone", "FFFFF");
+        categoryService.save(cat25);
+        Category cat26 = new Category("Depense", newUser.getLogin(), "Services public", 0f, "Internet", "FFFFF");
+        categoryService.save(cat26);
+        Category cat27 = new Category("Depense", newUser.getLogin(), "Transport", 0f, "Transports communs", "FFFFF");
+        categoryService.save(cat27);
+        Category cat28 = new Category("Depense", newUser.getLogin(), "Transport", 0f, "Taxi", "FFFFF");
+        categoryService.save(cat28);
+        Category cat29 = new Category("Depense", newUser.getLogin(), "Transport", 0f, "Voyages", "FFFFF");
+        categoryService.save(cat29);
+        Category cat30 = new Category("Depense", newUser.getLogin(), "Transport", 0f, "Assurances", "FFFFF");
+        categoryService.save(cat30);
+        Category cat31 = new Category("Depense", newUser.getLogin(), "Transport", 0f, "Entretiens des véhicules", "FFFFF");
+        categoryService.save(cat31);
+        Category cat32 = new Category("Depense", newUser.getLogin(), "Transport", 0f, "Carburant", "FFFFF");
+        categoryService.save(cat32);
+        Category cat33 = new Category("Depense", newUser.getLogin(), "Education", 0f, "Inscriptions", "FFFFF");
+        categoryService.save(cat33);
+        Category cat34 = new Category("Depense", newUser.getLogin(), "Education", 0f, "Cours de soutien", "FFFFF");
+        categoryService.save(cat34);
+        Category cat35 = new Category("Depense", newUser.getLogin(), "Education", 0f, "Fourniture", "FFFFF");
+        categoryService.save(cat35);
+        Category cat36 = new Category("Depense", newUser.getLogin(), "Loisir", 0f, "Culture et évènements sportifs", "FFFFF");
+        categoryService.save(cat36);
+        Category cat37 = new Category("Depense", newUser.getLogin(), "Loisir", 0f, "Bien-être beauté", "FFFFF");
+        categoryService.save(cat37);
+        Category cat38 = new Category("Depense", newUser.getLogin(), "Loisir", 0f, "Assurances des biens", "FFFFF");
+        categoryService.save(cat38);
+        Category cat39 = new Category("Depense", newUser.getLogin(), "Loisir", 0f, "Livre", "FFFFF");
+        categoryService.save(cat39);
+        Category cat40 = new Category("Depense", newUser.getLogin(), "Loisir", 0f, "Abonnements", "FFFFF");
+        categoryService.save(cat40);
+        Category cat41 = new Category("Depense", newUser.getLogin(), "Loisir", 0f, "Sport remise en forme", "FFFFF");
+        categoryService.save(cat41);
+        Category cat42 = new Category("Depense", newUser.getLogin(), "Loisir", 0f, "Hobbies et passion", "FFFFF");
+        categoryService.save(cat42);
+        Category cat43 = new Category("Depense", newUser.getLogin(), "Divers", 0f, "Cadeaux", "FFFFF");
+        categoryService.save(cat43);
+        Category cat44 = new Category("Depense", newUser.getLogin(), "Divers", 0f, "Animaux", "FFFFF");
+        categoryService.save(cat44);
+        Category cat45 = new Category("Depense", newUser.getLogin(), "Divers", 0f, "Jardin", "FFFFF");
+        categoryService.save(cat45);
+        Category cat46 = new Category("Depense", newUser.getLogin(), "Imprévus", 0f, "Amendes", "FFFFF");
+        categoryService.save(cat46);
+        Category cat47 = new Category("Revenus", newUser.getLogin(), "Catego", 0f, "Salaires", "FFFFF");
+        categoryService.save(cat47);
+        Category cat48 = new Category("Revenus", newUser.getLogin(), "Catego", 0f, "Vente et rentrée de loyer", "FFFFF");
+        categoryService.save(cat48);
+        Category cat49 = new Category("Revenus", newUser.getLogin(), "Catego", 0f, "Remboursements", "FFFFF");
+        categoryService.save(cat49);
+        Category cat50 = new Category("Revenus", newUser.getLogin(), "Catego", 0f, "Allocation familiale", "FFFFF");
+        categoryService.save(cat50);
+        Category cat51 = new Category("Revenus", newUser.getLogin(), "Catego", 0f, "Aide", "FFFFF");
+        categoryService.save(cat51);
+        Category cat52 = new Category("Revenus", newUser.getLogin(), "Catego", 0f, "Divers Revenus", "FFFFF");
+        categoryService.save(cat52);
+        Category cat53 = new Category("Revenus", newUser.getLogin(), "Divers Revenus", 0f, "Cadeaux", "FFFFF");
+        categoryService.save(cat53);
+
         this.clearUserCaches(newUser);
         log.debug("Created Information for User: {}", newUser);
         return newUser;

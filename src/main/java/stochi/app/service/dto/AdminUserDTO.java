@@ -48,6 +48,8 @@ public class AdminUserDTO {
 
     private Set<String> authorities;
 
+    private Float soldeUser;
+
     public AdminUserDTO() {
         // Empty constructor needed for Jackson.
     }
@@ -170,6 +172,14 @@ public class AdminUserDTO {
 
     public void setAuthorities(Set<String> authorities) {
         this.authorities = authorities;
+    }
+
+    public Float getSoldeUser() {
+        return soldeUser;
+    }
+
+    public void setSoldeUser(Float soldeUser) {
+        this.soldeUser = soldeUser;
     }
 
     // prettier-ignore
