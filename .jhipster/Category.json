@@ -1,0 +1,53 @@
+{
+  "fields": [
+    {
+      "fieldName": "type",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "nameCatego",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "originType",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "montant",
+      "fieldType": "Float"
+    },
+    {
+      "fieldName": "color",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "maxlength"],
+      "fieldValidateRulesMaxlength": "7"
+    },
+    {
+      "fieldName": "userLogin",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "minMontant",
+      "fieldType": "Float"
+    },
+    {
+      "fieldName": "maxMontant",
+      "fieldType": "Float"
+    },
+    {
+      "fieldName": "periodicty",
+      "fieldType": "String",
+      "fieldValidateRules": []
+    }
+  ],
+  "relationships": [],
+  "service": "serviceImpl",
+  "dto": "no",
+  "readOnly": false,
+  "pagination": "pagination",
+  "name": "Category",
+  "changelogDate": "20210423143252"
+}

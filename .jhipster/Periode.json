@@ -1,0 +1,35 @@
+{
+  "fields": [
+    {
+      "fieldName": "dateDeb",
+      "fieldType": "ZonedDateTime"
+    },
+    {
+      "fieldName": "dateFin",
+      "fieldType": "ZonedDateTime"
+    },
+    {
+      "fieldName": "frequancy",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "fixedMontant",
+      "fieldType": "Float"
+    },
+    {
+      "fieldName": "numberleft",
+      "fieldType": "Long"
+    },
+    {
+      "fieldName": "typeCatego",
+      "fieldType": "String"
+    }
+  ],
+  "relationships": [],
+  "service": "serviceImpl",
+  "dto": "no",
+  "readOnly": false,
+  "pagination": "pagination",
+  "name": "Periode",
+  "changelogDate": "20210423142406"
+}
