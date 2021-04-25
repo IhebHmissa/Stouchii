@@ -1,7 +1,10 @@
 package stochi.app.web.rest;
 
+import static stochi.app.security.SecurityUtils.getCurrentUserLoginn;
+
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -152,6 +155,16 @@ public class HistoryLineResource {
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 
+    @GetMapping("/history-lines/all")
+    public List<HistoryLine> getAllUserhisto() {
+        return historyLineRepository.findByUserLogin(getCurrentUserLoginn());
+    }
+
+    @GetMapping("/history-lines/{nomcatego}")
+    public List<HistoryLine> getSpecificCat(@PathVariable(value = "nomcatego") String nom) {
+        return historyLineRepository.findByUserLoginAndCategoryName(getCurrentUserLoginn(), nom);
+    }
+
     /**
      * {@code GET  /history-lines/:id} : get the "id" historyLine.
      *
@@ -176,5 +189,15 @@ public class HistoryLineResource {
         log.debug("REST request to delete HistoryLine : {}", id);
         historyLineService.delete(id);
         return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id)).build();
+    }
+
+    @GetMapping("/history-lines/soldechart")
+    public List<Float> evolutionSolde() {
+        List<Float> listaa = new ArrayList<Float>();
+        List<HistoryLine> histo = historyLineRepository.findByUserLogin(getCurrentUserLoginn());
+        for (HistoryLine histoo : histo) {
+            listaa.add(histoo.getSoldeuseravant());
+        }
+        return listaa;
     }
 }

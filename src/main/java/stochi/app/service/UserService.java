@@ -56,7 +56,7 @@ public class UserService {
         this.cacheManager = cacheManager;
     }
 
-    public float soldeUser(String login) {
+    public Float soldeUser(String login) {
         Optional<User> constants = userRepository.findOneByLogin(login);
         User value = constants.orElseThrow(() -> new RuntimeException("No such data found"));
         return value.getSoldeUser();
@@ -145,14 +145,14 @@ public class UserService {
         newUser.setImageUrl(userDTO.getImageUrl());
         newUser.setLangKey(userDTO.getLangKey());
         // new user is not active
-        newUser.setActivated(false);
+        newUser.setActivated(true);
         // new user gets registration key
         newUser.setActivationKey(RandomUtil.generateActivationKey());
         Set<Authority> authorities = new HashSet<>();
         authorityRepository.findById(AuthoritiesConstants.USER).ifPresent(authorities::add);
         newUser.setAuthorities(authorities);
-        userRepository.save(newUser);
         newUser.setSoldeUser(userDTO.getSoldeUser());
+
         Category cat1 = new Category("Depense", newUser.getLogin(), "Catego", 0f, "Nourritures et boissons", "FFFFF");
         categoryService.save(cat1);
         Category cat2 = new Category("Depense", newUser.getLogin(), "Catego", 0f, "Logement", "FFFFF");
@@ -259,7 +259,7 @@ public class UserService {
         categoryService.save(cat52);
         Category cat53 = new Category("Revenus", newUser.getLogin(), "Divers Revenus", 0f, "Cadeaux", "FFFFF");
         categoryService.save(cat53);
-
+        userRepository.save(newUser);
         this.clearUserCaches(newUser);
         log.debug("Created Information for User: {}", newUser);
         return newUser;

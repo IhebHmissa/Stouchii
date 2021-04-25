@@ -1,5 +1,7 @@
 package stochi.app.web.rest;
 
+import static stochi.app.security.SecurityUtils.getCurrentUserLoginn;
+
 import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -104,6 +106,11 @@ public class AccountResource {
             .getUserWithAuthorities()
             .map(AdminUserDTO::new)
             .orElseThrow(() -> new AccountResourceException("User could not be found"));
+    }
+
+    @GetMapping("/usersolde")
+    public Float getSousCategorie() {
+        return userService.soldeUser(getCurrentUserLoginn());
     }
 
     /**
