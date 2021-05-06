@@ -266,7 +266,7 @@ public class UserService {
         categoryService.save(cat52);
         Category cat53 = new Category("Revenus", newUser.getLogin(), "Income", 0f, "diverse", "#F7EE27", "IncomeCategorie");
         categoryService.save(cat53);
-        Category cat54 = new Category("Revenus", newUser.getLogin(), "Income", 0f, "Gifts", "#F7EE27", "IncomeCategorie");
+        Category cat54 = new Category("Revenus", newUser.getLogin(), "Income", 0f, "Money Gifts", "#F7EE27", "IncomeCategorie");
         categoryService.save(cat54);
         userRepository.save(newUser);
         this.clearUserCaches(newUser);

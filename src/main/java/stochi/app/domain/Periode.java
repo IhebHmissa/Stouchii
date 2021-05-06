@@ -53,13 +53,15 @@ public class Periode implements Serializable {
         this.dateDeb = dateDeb;
         this.dateFin = dateFin;
         this.frequancy = frequancy;
-        if (frequancy.equals("jour")) this.numberleft = calculDurations(dateDeb, dateFin)[0];
-        if (frequancy.equals("semaine")) this.numberleft = calculDurations(dateDeb, dateFin)[0] / 7;
-        if (frequancy.equals("2semaine")) this.numberleft = calculDurations(dateDeb, dateFin)[0] / 14;
-        if (frequancy.equals("mois")) this.numberleft = calculDurations(dateDeb, dateFin)[1];
-        if (frequancy.equals("trimestre")) this.numberleft = calculDurations(dateDeb, dateFin)[1] / 4;
-        if (frequancy.equals("semestre")) this.numberleft = calculDurations(dateDeb, dateFin)[1] / 6;
-        if (frequancy.equals("annee")) this.numberleft = calculDurations(dateDeb, dateFin)[2]; else this.numberleft = 0L;
+        if (dateFin != null) {
+            if (frequancy.equals("jour")) this.numberleft = calculDurations(dateDeb, dateFin)[0];
+            if (frequancy.equals("semaine")) this.numberleft = calculDurations(dateDeb, dateFin)[0] / 7;
+            if (frequancy.equals("2semaine")) this.numberleft = calculDurations(dateDeb, dateFin)[0] / 14;
+            if (frequancy.equals("mois")) this.numberleft = calculDurations(dateDeb, dateFin)[1];
+            if (frequancy.equals("trimestre")) this.numberleft = calculDurations(dateDeb, dateFin)[1] / 4;
+            if (frequancy.equals("semestre")) this.numberleft = calculDurations(dateDeb, dateFin)[1] / 6;
+            if (frequancy.equals("annee")) this.numberleft = calculDurations(dateDeb, dateFin)[2];
+        } else this.numberleft = 0L;
         this.fixedMontant = fixedMontant;
         this.typeCatego = typeCatego;
     }

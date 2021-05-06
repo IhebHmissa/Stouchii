@@ -4,7 +4,9 @@ import static stochi.app.security.SecurityUtils.getCurrentUserLoginn;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -154,6 +156,13 @@ public class CategoryResource {
         if (category.getModifDate() != null) catNEW.setModifDate(category.getModifDate()); //
         if (category.getPeriodictyy() != null) {
             catNEW.setPeriodictyy(category.getPeriodictyy());
+            if (catNEW.getPeriodictyy().getDateFin() != null) {
+                if (catNEW.getPeriodictyy().getFrequancy().equals("semaine")) catNEW.setperiodicity(0L);
+                if (catNEW.getPeriodictyy().getFrequancy().equals("2semaine")) catNEW.setperiodicity(0L);
+                if (catNEW.getPeriodictyy().getFrequancy().equals("trimestre")) catNEW.setperiodicity(0L);
+                if (catNEW.getPeriodictyy().getFrequancy().equals("semestre")) catNEW.setperiodicity(0L);
+                if (catNEW.getPeriodictyy().getFrequancy().equals("annee")) catNEW.setperiodicity(0L);
+            } else catNEW.setperiodicity(0L);
             System.out.println(category.getPeriodictyy());
         }
 
@@ -400,8 +409,8 @@ public class CategoryResource {
     private void addperodicitysolde(Category catego, User user) {
         catego.setMontant(catego.getMontant() + catego.getPeriodictyy().getFixedMontant());
         categoryRepository.save(catego);
-        if (catego.getType().equals("Depense")) user.setSoldeUser(user.getSoldeUser() + catego.getPeriodictyy().getFixedMontant());
-        if (catego.getType().equals("Revenus")) user.setSoldeUser(user.getSoldeUser() - catego.getPeriodictyy().getFixedMontant());
+        if (catego.getType().equals("Depense")) user.setSoldeUser(user.getSoldeUser() - catego.getPeriodictyy().getFixedMontant());
+        if (catego.getType().equals("Revenus")) user.setSoldeUser(user.getSoldeUser() + catego.getPeriodictyy().getFixedMontant());
         userRepository.save(user);
         HistoryLine hist = new HistoryLine(
             catego.getNameCatego(),
@@ -414,7 +423,7 @@ public class CategoryResource {
         historyLineRepository.save(hist);
         if (catego.getType().equals("Depense")) {
             Notification notif = new Notification(
-                catego.getMontant(),
+                catego.getPeriodictyy().getFixedMontant(),
                 user.getLogin(),
                 catego.getNameCatego(),
                 ZonedDateTime.now(),
@@ -425,7 +434,7 @@ public class CategoryResource {
         }
         if (catego.getType().equals("Revenus")) {
             Notification notif = new Notification(
-                catego.getMontant(),
+                catego.getPeriodictyy().getFixedMontant(),
                 user.getLogin(),
                 catego.getNameCatego(),
                 ZonedDateTime.now(),
@@ -440,7 +449,7 @@ public class CategoryResource {
     Cette fonction se répéte chaque jour a 7h00
     */
 
-    @Scheduled(cron = "0 0 7 * * *", zone = "Africa/Tunis")
+    @Scheduled(fixedDelay = 20000)
     public void Scheduled_task() {
         System.out.println("This a repeated task");
 
@@ -448,24 +457,44 @@ public class CategoryResource {
         for (User user : listaa) {
             for (Category catego : FindAllCategories(user.getLogin())) {
                 if (catego.getPeriodictyy() != null) {
+                    System.out.println(catego.getNameCatego());
+
+                    if (
+                        catego.getPeriodictyy().getFrequancy().equals("mois") &
+                        catego.getPeriodictyy().getDateDeb().isBefore(ZonedDateTime.now())
+                    ) {
+                        if (ZonedDateTime.now().getDayOfMonth() == catego.getPeriodictyy().getDateDeb().getDayOfMonth()) {
+                            if (catego.getPeriodictyy().getDateFin() == null) {
+                                System.out.println("I m here");
+                                addperodicitysolde(catego, user);
+                            }
+                            if ((catego.getPeriodictyy().getDateFin() != null)) if (
+                                catego.getPeriodictyy().getDateFin().isBefore(ZonedDateTime.now())
+                            ) {
+                                System.out.println("I m here2");
+                                addperodicitysolde(catego, user);
+                            }
+                        }
+                    }
+
                     if (
                         catego.getPeriodictyy().getFrequancy().equals("mois") &
                         catego.getPeriodictyy().getDateDeb().isAfter(ZonedDateTime.now())
                     ) {
-                        if (LocalDateTime.now().getDayOfMonth() == catego.getPeriodictyy().getDateDeb().getDayOfMonth()) if (
-                            (catego.getPeriodictyy().getDateFin() == null) |
-                            (
-                                catego.getPeriodictyy().getDateFin() != null &
+                        if (ZonedDateTime.now().getDayOfMonth() == catego.getPeriodictyy().getDateDeb().minusDays(1).getDayOfMonth()) {
+                            if (catego.getPeriodictyy().getDateFin() == null) {
+                                Notification notif = new Notification(
+                                    catego.getMontant(),
+                                    user.getLogin(),
+                                    catego.getNameCatego(),
+                                    ZonedDateTime.now(),
+                                    "1Day left"
+                                );
+                                notificationRepository.save(notif);
+                                System.out.println(notif);
+                            }
+                            if ((catego.getPeriodictyy().getDateFin() != null)) if (
                                 catego.getPeriodictyy().getDateFin().isBefore(ZonedDateTime.now())
-                            )
-                        ) addperodicitysolde(catego, user);
-                        if (LocalDateTime.now().getDayOfMonth() == catego.getPeriodictyy().getDateDeb().minusDays(1).getDayOfMonth()) {
-                            if (LocalDateTime.now().getDayOfMonth() == catego.getPeriodictyy().getDateDeb().getDayOfMonth()) if (
-                                (catego.getPeriodictyy().getDateFin() == null) |
-                                (
-                                    catego.getPeriodictyy().getDateFin() != null &
-                                    catego.getPeriodictyy().getDateFin().isBefore(ZonedDateTime.now())
-                                )
                             ) {
                                 Notification notif = new Notification(
                                     catego.getMontant(),
@@ -479,105 +508,148 @@ public class CategoryResource {
                             }
                         }
                     }
+
+                    System.out.println(
+                        catego.getPeriodictyy().getFrequancy().equals("jour") &
+                        catego.getPeriodictyy().getDateDeb().isBefore(ZonedDateTime.now())
+                    );
                     if (
                         catego.getPeriodictyy().getFrequancy().equals("jour") &
-                        catego.getPeriodictyy().getDateDeb().isAfter(ZonedDateTime.now())
+                        catego.getPeriodictyy().getDateDeb().isBefore(ZonedDateTime.now())
                     ) {
-                        if (
-                            (catego.getPeriodictyy().getDateFin() == null) |
-                            (
-                                catego.getPeriodictyy().getDateFin() != null &
-                                catego.getPeriodictyy().getDateFin().isBefore(ZonedDateTime.now())
-                            )
-                        ) addperodicitysolde(catego, user);
+                        System.out.println(catego.getPeriodictyy().getDateDeb());
+                        System.out.println(ZonedDateTime.now());
+                        if (catego.getPeriodictyy().getDateFin() == null) addperodicitysolde(catego, user);
+
+                        if (catego.getPeriodictyy().getDateFin() != null) {
+                            if (catego.getPeriodictyy().getDateFin().isAfter(ZonedDateTime.now())) addperodicitysolde(catego, user);
+                        }
                     }
+                    System.out.println(
+                        catego.getPeriodictyy().getFrequancy().equals("semaine") &
+                        catego.getPeriodictyy().getDateDeb().isBefore(ZonedDateTime.now())
+                    );
+                    System.out.println(catego.getPeriodictyy().getNumberleft());
                     if (
                         catego.getPeriodictyy().getFrequancy().equals("semaine") &
-                        catego.getPeriodictyy().getDateDeb().isAfter(ZonedDateTime.now())
+                        catego.getPeriodictyy().getDateDeb().isBefore(ZonedDateTime.now())
                     ) {
-                        if (
-                            (catego.getPeriodictyy().getDateFin() == null) |
-                            (
-                                catego.getPeriodictyy().getDateFin() != null &
-                                catego.getPeriodictyy().getDateFin().isBefore(ZonedDateTime.now())
-                            )
-                        ) {
-                            if (catego.getPeriodictyy().getNumberleft() == 6) {
+                        if ((catego.getPeriodictyy().getDateFin() == null)) {
+                            if (catego.getPeriodictyy().getNumberleft() == 0) {
                                 addperodicitysolde(catego, user);
-                                catego.getPeriodictyy().setNumberleft(0L);
-                            } else catego.getPeriodictyy().setNumberleft(catego.getPeriodictyy().getNumberleft() + 1);
+                                catego.setperiodicity(catego.getPeriodictyy().getNumberleft() + 1);
+                            } else if (catego.getPeriodictyy().getNumberleft() == 6) catego.setperiodicity(0L); else catego.setperiodicity(
+                                catego.getPeriodictyy().getNumberleft() + 1
+                            );
                             categoryRepository.save(catego);
+                        }
+                        if ((catego.getPeriodictyy().getDateFin() != null)) {
+                            if (catego.getPeriodictyy().getDateFin().isAfter(ZonedDateTime.now())) {
+                                if (catego.getPeriodictyy().getNumberleft() == 0) {
+                                    addperodicitysolde(catego, user);
+                                    catego.setperiodicity(catego.getPeriodictyy().getNumberleft() + 1);
+                                } else if (catego.getPeriodictyy().getNumberleft() == 6) catego.setperiodicity(
+                                    0L
+                                ); else catego.setperiodicity(catego.getPeriodictyy().getNumberleft() + 1);
+                                categoryRepository.save(catego);
+                            }
                         }
                     }
                     if (
                         catego.getPeriodictyy().getFrequancy().equals("2semaine") &
-                        catego.getPeriodictyy().getDateDeb().isAfter(ZonedDateTime.now())
+                        catego.getPeriodictyy().getDateDeb().isBefore(ZonedDateTime.now())
                     ) {
-                        if (
-                            (catego.getPeriodictyy().getDateFin() == null) |
-                            (
-                                catego.getPeriodictyy().getDateFin() != null &
-                                catego.getPeriodictyy().getDateFin().isBefore(ZonedDateTime.now())
-                            )
-                        ) {
-                            if (catego.getPeriodictyy().getNumberleft() == 13) {
+                        if ((catego.getPeriodictyy().getDateFin() == null)) {
+                            if (catego.getPeriodictyy().getNumberleft() == 0) {
                                 addperodicitysolde(catego, user);
-                                catego.getPeriodictyy().setNumberleft(0L);
-                            } else catego.getPeriodictyy().setNumberleft(catego.getPeriodictyy().getNumberleft() + 1);
+                                catego.setperiodicity(catego.getPeriodictyy().getNumberleft() + 1);
+                            } else if (catego.getPeriodictyy().getNumberleft() == 13) catego.setperiodicity(0L); else catego.setperiodicity(
+                                catego.getPeriodictyy().getNumberleft() + 1
+                            );
                             categoryRepository.save(catego);
                         }
+                        if ((catego.getPeriodictyy().getDateFin() != null)) {
+                            if (catego.getPeriodictyy().getDateFin().isAfter(ZonedDateTime.now())) {
+                                if (catego.getPeriodictyy().getNumberleft() == 0) {
+                                    addperodicitysolde(catego, user);
+                                    catego.setperiodicity(catego.getPeriodictyy().getNumberleft() + 1);
+                                } else if (catego.getPeriodictyy().getNumberleft() == 13) catego.setperiodicity(
+                                    0L
+                                ); else catego.setperiodicity(catego.getPeriodictyy().getNumberleft() + 1);
+                                categoryRepository.save(catego);
+                            }
+                        }
                     }
+
                     if (
                         catego.getPeriodictyy().getFrequancy().equals("trimestre") &
-                        catego.getPeriodictyy().getDateDeb().isAfter(ZonedDateTime.now())
+                        catego.getPeriodictyy().getDateDeb().isBefore(ZonedDateTime.now()) &
+                        (ZonedDateTime.now().getDayOfMonth() == catego.getPeriodictyy().getDateDeb().getDayOfMonth())
                     ) {
-                        if (
-                            (catego.getPeriodictyy().getDateFin() == null) |
-                            (
-                                catego.getPeriodictyy().getDateFin() != null &
-                                catego.getPeriodictyy().getDateFin().isBefore(ZonedDateTime.now())
-                            )
-                        ) {
-                            if (LocalDateTime.now().getDayOfMonth() == catego.getPeriodictyy().getDateDeb().getDayOfMonth()) {
-                                if (catego.getPeriodictyy().getNumberleft() == 3) {
-                                    addperodicitysolde(catego, user);
-                                    catego.getPeriodictyy().setNumberleft(0L);
-                                } else catego.getPeriodictyy().setNumberleft(catego.getPeriodictyy().getNumberleft() + 1);
-                            }
+                        if ((catego.getPeriodictyy().getDateFin() == null)) {
+                            if (catego.getPeriodictyy().getNumberleft() == 0) {
+                                addperodicitysolde(catego, user);
+                                catego.setperiodicity(catego.getPeriodictyy().getNumberleft() + 1);
+                            } else if (catego.getPeriodictyy().getNumberleft() == 2) catego.setperiodicity(0L); else catego.setperiodicity(
+                                catego.getPeriodictyy().getNumberleft() + 1
+                            );
                             categoryRepository.save(catego);
                         }
+                        if ((catego.getPeriodictyy().getDateFin() != null)) {
+                            if (catego.getPeriodictyy().getDateFin().isAfter(ZonedDateTime.now())) {
+                                if (catego.getPeriodictyy().getNumberleft() == 0) {
+                                    addperodicitysolde(catego, user);
+                                    catego.setperiodicity(catego.getPeriodictyy().getNumberleft() + 1);
+                                } else if (catego.getPeriodictyy().getNumberleft() == 2) catego.setperiodicity(
+                                    0L
+                                ); else catego.setperiodicity(catego.getPeriodictyy().getNumberleft() + 1);
+                                categoryRepository.save(catego);
+                            }
+                        }
                     }
+
                     if (
                         catego.getPeriodictyy().getFrequancy().equals("semestre") &
-                        catego.getPeriodictyy().getDateDeb().isAfter(ZonedDateTime.now())
+                        catego.getPeriodictyy().getDateDeb().isBefore(ZonedDateTime.now()) &
+                        (ZonedDateTime.now().getDayOfMonth() == catego.getPeriodictyy().getDateDeb().getDayOfMonth())
                     ) {
-                        if (
-                            (catego.getPeriodictyy().getDateFin() == null) |
-                            (
-                                catego.getPeriodictyy().getDateFin() != null &
-                                catego.getPeriodictyy().getDateFin().isBefore(ZonedDateTime.now())
-                            )
-                        ) {
-                            if (LocalDateTime.now().getDayOfMonth() == catego.getPeriodictyy().getDateDeb().getDayOfMonth()) {
-                                if (catego.getPeriodictyy().getNumberleft() == 5) {
+                        if ((catego.getPeriodictyy().getDateFin() == null)) {
+                            if (catego.getPeriodictyy().getNumberleft() == 0) {
+                                addperodicitysolde(catego, user);
+                                catego.setperiodicity(catego.getPeriodictyy().getNumberleft() + 1);
+                            } else if (catego.getPeriodictyy().getNumberleft() == 2) catego.setperiodicity(0L); else catego.setperiodicity(
+                                catego.getPeriodictyy().getNumberleft() + 1
+                            );
+                            categoryRepository.save(catego);
+                        }
+                        if ((catego.getPeriodictyy().getDateFin() != null)) {
+                            if (catego.getPeriodictyy().getDateFin().isAfter(ZonedDateTime.now())) {
+                                if (catego.getPeriodictyy().getNumberleft() == 0) {
                                     addperodicitysolde(catego, user);
-                                    catego.getPeriodictyy().setNumberleft(0L);
-                                } else catego.getPeriodictyy().setNumberleft(catego.getPeriodictyy().getNumberleft() + 1);
+                                    catego.setperiodicity(catego.getPeriodictyy().getNumberleft() + 1);
+                                } else if (catego.getPeriodictyy().getNumberleft() == 2) catego.setperiodicity(
+                                    0L
+                                ); else catego.setperiodicity(catego.getPeriodictyy().getNumberleft() + 1);
                                 categoryRepository.save(catego);
                             }
                         }
                     }
                     if (
                         catego.getPeriodictyy().getFrequancy().equals("annee") &
-                        catego.getPeriodictyy().getDateDeb().isAfter(ZonedDateTime.now())
+                        catego.getPeriodictyy().getDateDeb().isBefore(ZonedDateTime.now())
                     ) {
-                        if (LocalDateTime.now().getDayOfYear() == catego.getPeriodictyy().getDateDeb().getDayOfYear()) if (
-                            (catego.getPeriodictyy().getDateFin() == null) |
-                            (
-                                catego.getPeriodictyy().getDateFin() != null &
+                        if (ZonedDateTime.now().getDayOfYear() == catego.getPeriodictyy().getDateDeb().getDayOfYear()) {
+                            if (catego.getPeriodictyy().getDateFin() == null) {
+                                System.out.println("I m here");
+                                addperodicitysolde(catego, user);
+                            }
+                            if ((catego.getPeriodictyy().getDateFin() != null)) if (
                                 catego.getPeriodictyy().getDateFin().isBefore(ZonedDateTime.now())
-                            )
-                        ) addperodicitysolde(catego, user);
+                            ) {
+                                System.out.println("I m here2");
+                                addperodicitysolde(catego, user);
+                            }
+                        }
                     }
                 }
             }

@@ -138,6 +138,10 @@ public class Category implements Serializable {
         this.userLogin = userLogin;
     }
 
+    public void setperiodicity(Long longg) {
+        this.periodictyy.setNumberleft(longg);
+    }
+
     // jhipster-needle-entity-add-field - JHipster will add fields here
     public String getId() {
         return id;
