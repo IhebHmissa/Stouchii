@@ -62,9 +62,6 @@ public class CategoryServiceImpl implements CategoryService {
                     if (category.getMaxMontant() != null) {
                         existingCategory.setMaxMontant(category.getMaxMontant());
                     }
-                    if (category.getPeriodicty() != null) {
-                        existingCategory.setPeriodicty(category.getPeriodicty());
-                    }
 
                     return existingCategory;
                 }

@@ -23,6 +23,14 @@ import category, {
 import historyLine, {
   HistoryLineState
 } from 'app/entities/history-line/history-line.reducer';
+// prettier-ignore
+import notification, {
+  NotificationState
+} from 'app/entities/notification/notification.reducer';
+// prettier-ignore
+import applicationUser, {
+  ApplicationUserState
+} from 'app/entities/application-user/application-user.reducer';
 /* jhipster-needle-add-reducer-import - JHipster will add reducer here */
 
 export interface IRootState {
@@ -38,6 +46,8 @@ export interface IRootState {
   readonly periode: PeriodeState;
   readonly category: CategoryState;
   readonly historyLine: HistoryLineState;
+  readonly notification: NotificationState;
+  readonly applicationUser: ApplicationUserState;
   /* jhipster-needle-add-reducer-type - JHipster will add reducer type here */
   readonly loadingBar: any;
 }
@@ -55,6 +65,8 @@ const rootReducer = combineReducers<IRootState>({
   periode,
   category,
   historyLine,
+  notification,
+  applicationUser,
   /* jhipster-needle-add-reducer-combine - JHipster will add reducer here */
   loadingBar,
 });

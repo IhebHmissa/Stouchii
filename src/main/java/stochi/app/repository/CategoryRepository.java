@@ -17,4 +17,5 @@ public interface CategoryRepository extends MongoRepository<Category, String> {
     List<Category> findByUserLoginAndType(String login, String type);
     List<Category> findByUserLogin(String login);
     List<Category> findByUserLoginAndTypeAndOriginType(String login, String type, String origin);
+    List<Category> findByUserLoginAndNameCatego(String login, String name);
 }

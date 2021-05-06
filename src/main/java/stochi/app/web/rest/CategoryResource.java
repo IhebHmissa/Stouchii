@@ -26,9 +26,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import stochi.app.domain.Category;
 import stochi.app.domain.HistoryLine;
+import stochi.app.domain.Notification;
 import stochi.app.domain.User;
 import stochi.app.repository.CategoryRepository;
 import stochi.app.repository.HistoryLineRepository;
+import stochi.app.repository.NotificationRepository;
 import stochi.app.repository.UserRepository;
 import stochi.app.service.CategoryService;
 import stochi.app.web.rest.errors.BadRequestAlertException;
@@ -60,16 +62,21 @@ public class CategoryResource {
     @Autowired
     private final HistoryLineRepository historyLineRepository;
 
+    @Autowired
+    private final NotificationRepository notificationRepository;
+
     public CategoryResource(
         CategoryService categoryService,
         CategoryRepository categoryRepository,
         UserRepository userRepository,
-        HistoryLineRepository historyLineRepository
+        HistoryLineRepository historyLineRepository,
+        NotificationRepository notificationRepository
     ) {
         this.categoryService = categoryService;
         this.categoryRepository = categoryRepository;
         this.userRepository = userRepository;
         this.historyLineRepository = historyLineRepository;
+        this.notificationRepository = notificationRepository;
     }
 
     /**
@@ -81,9 +88,16 @@ public class CategoryResource {
      */
     @PostMapping("/categories")
     public ResponseEntity<Category> createCategory(@Valid @RequestBody Category category) throws URISyntaxException {
-        log.debug("REST request to save Category : {}", category);
-        if (category.getId() != null) {
-            throw new BadRequestAlertException("A new category cannot already have an ID", ENTITY_NAME, "idexists");
+        category.setUserLogin(getCurrentUserLoginn());
+
+        System.out.println(categoryRepository.findByUserLoginAndNameCatego(getCurrentUserLoginn(), category.getNameCatego()));
+
+        if (!categoryRepository.findByUserLoginAndNameCatego(getCurrentUserLoginn(), category.getNameCatego()).isEmpty()) {
+            throw new BadRequestAlertException(
+                "A new category cannot have the same name as existing category",
+                ENTITY_NAME,
+                " catego exists"
+            );
         }
         Category result = categoryService.save(category);
         return ResponseEntity
@@ -129,43 +143,143 @@ public class CategoryResource {
         }
         Category catNEW = categoryRepository.findOneByUserLoginAndNameCatego(getCurrentUserLoginn(), category.getNameCatego());
         System.out.println(catNEW);
-        float montan = category.getMontant();
-        System.out.println(montan);
-        if (!category.getColor().equals("")) catNEW.setColor(category.getColor());
-        if (category.getMaxMontant() != 0) catNEW.setMaxMontant(category.getMaxMontant());
-        if (category.getMinMontant() != 0) catNEW.setMinMontant(category.getMinMontant());
-        if (!category.getNameCatego().equals("")) catNEW.setNameCatego(category.getNameCatego());
-        if (category.getPeriodictyy() != null) catNEW.setPeriodictyy(category.getPeriodictyy());
-        System.out.println(category.getPeriodictyy());
-        if (category.getMontant() != 0) {
-            if (!category.getOriginType().equals("Catego")) {
-                Category Categooo = categoryRepository.findOneByUserLoginAndNameCatego(getCurrentUserLoginn(), category.getOriginType());
-                Categooo.setMontant(Categooo.getMontant() + category.getMontant());
+
+        if (category.getColor() != null) catNEW.setColor(category.getColor());
+        if (category.getMaxMontant() != null) catNEW.setMaxMontant(category.getMaxMontant());
+        if (category.getMinMontant() != null) catNEW.setMinMontant(category.getMinMontant());
+        if (category.getAverage() != null) catNEW.setAverage(category.getAverage());
+        if (category.getNameCatego() != null) catNEW.setNameCatego(category.getNameCatego());
+        if (category.getNameIcon() != null) catNEW.setNameIcon(category.getNameIcon());
+        if (category.getDest() != null) catNEW.setDest(category.getDest());
+        if (category.getModifDate() != null) catNEW.setModifDate(category.getModifDate()); //
+        if (category.getPeriodictyy() != null) {
+            catNEW.setPeriodictyy(category.getPeriodictyy());
+            System.out.println(category.getPeriodictyy());
+        }
+
+        if (category.getMontant() != null) {
+            float montan = category.getMontant();
+            System.out.println(montan);
+            if (!catNEW.getOriginType().equals("Catego")) {
+                Category Categooo = categoryRepository.findOneByUserLoginAndNameCatego(getCurrentUserLoginn(), catNEW.getOriginType());
+                if (Categooo.getMontant() != null) Categooo.setMontant(
+                    Categooo.getMontant() + category.getMontant()
+                ); else Categooo.setMontant(category.getMontant());
                 categoryRepository.save(Categooo);
                 System.out.println(Categooo);
             }
-            catNEW.setMontant(category.getMontant() + catNEW.getMontant());
+            if (catNEW.getMontant() != null) catNEW.setMontant(category.getMontant() + catNEW.getMontant()); else catNEW.setMontant(
+                category.getMontant()
+            );
             System.out.println("from here ?");
             Optional<User> constants = userRepository.findOneByLogin(catNEW.getUserLogin());
             System.out.println(constants);
             User value = constants.orElseThrow(() -> new RuntimeException("No such data found"));
             System.out.println(value);
+            System.out.println("tak tak ?");
             if (catNEW.getType().equals("Depense")) value.setSoldeUser(value.getSoldeUser() - category.getMontant());
             if (catNEW.getType().equals("Revenus")) value.setSoldeUser(value.getSoldeUser() + category.getMontant());
             System.out.println(value);
             userRepository.save(value);
             System.out.println(value);
 
-            HistoryLine hist = new HistoryLine(
-                catNEW.getNameCatego(),
-                ZonedDateTime.now(),
-                montan,
-                catNEW.getUserLogin(),
-                catNEW.getType(),
-                value.getSoldeUser()
-            );
-            historyLineRepository.save(hist);
-            System.out.println(hist);
+            // History part !
+
+            if ((category.getModifDate() != null) & (category.getNote() != null)) {
+                HistoryLine hist = new HistoryLine(
+                    catNEW.getNameCatego(),
+                    category.getModifDate(),
+                    montan,
+                    catNEW.getUserLogin(),
+                    catNEW.getType(),
+                    value.getSoldeUser(),
+                    category.getNote()
+                );
+                historyLineRepository.save(hist);
+                System.out.println(hist);
+            } else if ((category.getModifDate() == null) & (category.getNote() != null)) {
+                HistoryLine hist = new HistoryLine(
+                    catNEW.getNameCatego(),
+                    ZonedDateTime.now(),
+                    montan,
+                    catNEW.getUserLogin(),
+                    catNEW.getType(),
+                    value.getSoldeUser(),
+                    category.getNote()
+                );
+                historyLineRepository.save(hist);
+                System.out.println(hist);
+            } else if ((category.getModifDate() != null) & (category.getNote() == null)) {
+                HistoryLine hist = new HistoryLine(
+                    catNEW.getNameCatego(),
+                    category.getModifDate(),
+                    montan,
+                    catNEW.getUserLogin(),
+                    catNEW.getType(),
+                    value.getSoldeUser()
+                );
+                historyLineRepository.save(hist);
+                System.out.println(hist);
+            } else {
+                HistoryLine hist = new HistoryLine(
+                    catNEW.getNameCatego(),
+                    ZonedDateTime.now(),
+                    montan,
+                    catNEW.getUserLogin(),
+                    catNEW.getType(),
+                    value.getSoldeUser()
+                );
+                historyLineRepository.save(hist);
+                System.out.println(hist);
+            }
+
+            // Notificiation part !
+            if (
+                catNEW.getAverage() != null &
+                categoryRepository.findOneByUserLoginAndNameCatego(getCurrentUserLoginn(), "Salary").getPeriodictyy().getFixedMontant() !=
+                null
+            ) {
+                Float salary = categoryRepository
+                    .findOneByUserLoginAndNameCatego(getCurrentUserLoginn(), "Salary")
+                    .getPeriodictyy()
+                    .getFixedMontant();
+
+                if (
+                    (catNEW.getMontant() > 0.9 * salary * catNEW.getAverage()) & (catNEW.getMontant() < 0.95 * salary * catNEW.getAverage())
+                ) {
+                    Notification notif = new Notification(
+                        catNEW.getMontant(),
+                        value.getLogin(),
+                        catNEW.getNameCatego(),
+                        ZonedDateTime.now(),
+                        "90% exceeded"
+                    );
+                    notificationRepository.save(notif);
+                    System.out.println(notif);
+                } else if (
+                    (catNEW.getMontant() > 0.95 * salary * catNEW.getAverage()) & (catNEW.getMontant() < salary * catNEW.getAverage())
+                ) {
+                    Notification notif = new Notification(
+                        catNEW.getMontant(),
+                        value.getLogin(),
+                        catNEW.getNameCatego(),
+                        ZonedDateTime.now(),
+                        "95% exceeded"
+                    );
+                    notificationRepository.save(notif);
+                    System.out.println(notif);
+                } else if (catNEW.getMontant() > salary * catNEW.getAverage()) {
+                    Notification notif = new Notification(
+                        catNEW.getMontant(),
+                        value.getLogin(),
+                        catNEW.getNameCatego(),
+                        ZonedDateTime.now(),
+                        "100% exceeded"
+                    );
+                    notificationRepository.save(notif);
+                    System.out.println(notif);
+                }
+            }
         }
 
         Category result = categoryService.save(catNEW);
@@ -273,12 +387,10 @@ public class CategoryResource {
      */
     @DeleteMapping("/categories/{nomcatego}")
     public ResponseEntity<Void> deleteCategory(@PathVariable String nomcatego) {
+        String id = categoryRepository.findOneByUserLoginAndNameCatego(getCurrentUserLoginn(), nomcatego).getId();
         log.debug("REST request to delete Category : {}", nomcatego);
-        categoryService.delete(nomcatego);
-        return ResponseEntity
-            .noContent()
-            .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, nomcatego))
-            .build();
+        categoryService.delete(id);
+        return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id)).build();
     }
 
     private List<Category> FindAllCategories(String login) {
@@ -300,6 +412,28 @@ public class CategoryResource {
             user.getSoldeUser()
         );
         historyLineRepository.save(hist);
+        if (catego.getType().equals("Depense")) {
+            Notification notif = new Notification(
+                catego.getMontant(),
+                user.getLogin(),
+                catego.getNameCatego(),
+                ZonedDateTime.now(),
+                "Money out"
+            );
+            notificationRepository.save(notif);
+            System.out.println(notif);
+        }
+        if (catego.getType().equals("Revenus")) {
+            Notification notif = new Notification(
+                catego.getMontant(),
+                user.getLogin(),
+                catego.getNameCatego(),
+                ZonedDateTime.now(),
+                "Money IN"
+            );
+            notificationRepository.save(notif);
+            System.out.println(notif);
+        }
     }
 
     /*
@@ -325,6 +459,25 @@ public class CategoryResource {
                                 catego.getPeriodictyy().getDateFin().isBefore(ZonedDateTime.now())
                             )
                         ) addperodicitysolde(catego, user);
+                        if (LocalDateTime.now().getDayOfMonth() == catego.getPeriodictyy().getDateDeb().minusDays(1).getDayOfMonth()) {
+                            if (LocalDateTime.now().getDayOfMonth() == catego.getPeriodictyy().getDateDeb().getDayOfMonth()) if (
+                                (catego.getPeriodictyy().getDateFin() == null) |
+                                (
+                                    catego.getPeriodictyy().getDateFin() != null &
+                                    catego.getPeriodictyy().getDateFin().isBefore(ZonedDateTime.now())
+                                )
+                            ) {
+                                Notification notif = new Notification(
+                                    catego.getMontant(),
+                                    user.getLogin(),
+                                    catego.getNameCatego(),
+                                    ZonedDateTime.now(),
+                                    "1Day left"
+                                );
+                                notificationRepository.save(notif);
+                                System.out.println(notif);
+                            }
+                        }
                     }
                     if (
                         catego.getPeriodictyy().getFrequancy().equals("jour") &

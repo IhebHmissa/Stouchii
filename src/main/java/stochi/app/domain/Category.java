@@ -1,6 +1,7 @@
 package stochi.app.domain;
 
 import java.io.Serializable;
+import java.time.ZonedDateTime;
 import javax.validation.constraints.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -42,15 +43,90 @@ public class Category implements Serializable {
     @Field("max_montant")
     private Float maxMontant;
 
-    @Field("periodicty")
-    private String periodicty;
+    private Float average;
 
     private Periode periodictyy;
+
+    private String nameIcon;
+
+    private String dest;
+
+    private ZonedDateTime modifDate;
+    private String note;
 
     public Category() {}
 
     public Category(String nameCatego) {
         this.nameCatego = nameCatego;
+    }
+
+    public Category(String nameCatego, Float minMontant, Float maxMontant, Float average, Periode periodictyy) {
+        this.nameCatego = nameCatego;
+        this.minMontant = minMontant;
+        this.maxMontant = maxMontant;
+        this.average = average;
+        this.periodictyy = periodictyy;
+    }
+
+    public Category(String nameCatego, Float minMontant, Float maxMontant, Float average) {
+        this.nameCatego = nameCatego;
+        this.minMontant = minMontant;
+        this.maxMontant = maxMontant;
+        this.average = average;
+    }
+
+    public Category(String nameCatego, Float minMontant, Float maxMontant, Float average, Float montant) {
+        this.nameCatego = nameCatego;
+        this.montant = montant;
+        this.minMontant = minMontant;
+        this.maxMontant = maxMontant;
+        this.average = average;
+    }
+
+    public Category(String type, Float montant, String nameCatego, String note, ZonedDateTime date) {
+        this.type = type;
+        this.nameCatego = nameCatego;
+        this.montant = montant;
+        this.note = note;
+        this.modifDate = date;
+    }
+
+    public Category(
+        String type,
+        String userLogin,
+        String originType,
+        Float montant,
+        String nameCatego,
+        @Size(max = 7) String color,
+        String icopone,
+        String dest
+    ) {
+        this.type = type;
+        this.nameCatego = nameCatego;
+        this.originType = originType;
+        this.montant = montant;
+        this.color = color;
+        this.userLogin = userLogin;
+        this.nameIcon = icopone;
+        this.dest = dest;
+    }
+
+    public Category(
+        String type,
+        String userLogin,
+        String originType,
+        Float montant,
+        String nameCatego,
+        @Size(max = 7) String color,
+        String icopone
+    ) {
+        this.type = type;
+        this.nameCatego = nameCatego;
+        this.originType = originType;
+        this.montant = montant;
+        this.color = color;
+        this.userLogin = userLogin;
+        this.nameIcon = icopone;
     }
 
     public Category(String type, String userLogin, String originType, Float montant, String nameCatego, @Size(max = 7) String color) {
@@ -180,17 +256,44 @@ public class Category implements Serializable {
         this.maxMontant = maxMontant;
     }
 
-    public String getPeriodicty() {
-        return this.periodicty;
+    public Float getAverage() {
+        return average;
     }
 
-    public Category periodicty(String periodicty) {
-        this.periodicty = periodicty;
-        return this;
+    public void setAverage(Float average) {
+        this.average = average;
     }
 
-    public void setPeriodicty(String periodicty) {
-        this.periodicty = periodicty;
+    public String getNameIcon() {
+        return nameIcon;
+    }
+
+    public void setNameIcon(String nameIcon) {
+        this.nameIcon = nameIcon;
+    }
+
+    public String getDest() {
+        return dest;
+    }
+
+    public void setDest(String dest) {
+        this.dest = dest;
+    }
+
+    public ZonedDateTime getModifDate() {
+        return modifDate;
+    }
+
+    public void setModifDate(ZonedDateTime modifDate) {
+        this.modifDate = modifDate;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
     }
 
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
@@ -233,7 +336,7 @@ public class Category implements Serializable {
             ", userLogin='" + getUserLogin() + "'" +
             ", minMontant=" + getMinMontant() +
             ", maxMontant=" + getMaxMontant() +
-            ", periodicty='" + getPeriodicty() + "'" +
+            ", periodicty='" + getAverage() + "'" +
             "}";
     }
 }

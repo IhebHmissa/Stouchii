@@ -60,6 +60,42 @@ public class HistoryLine implements Serializable {
         this.soldeuseravant = soldeuseravant;
     }
 
+    public HistoryLine(
+        @NotNull String categoryName,
+        @NotNull ZonedDateTime dateModif,
+        @NotNull Float montant,
+        String userLogin,
+        String typeCatego,
+        Float soldeuseravant,
+        String note
+    ) {
+        this.categoryName = categoryName;
+        this.dateModif = dateModif;
+        this.montant = montant;
+        this.userLogin = userLogin;
+        this.typeCatego = typeCatego;
+        this.soldeuseravant = soldeuseravant;
+        this.note = note;
+    }
+
+    public HistoryLine(
+        @NotNull String categoryName,
+        @NotNull ZonedDateTime dateModif,
+        @NotNull Float montant,
+        String userLogin,
+        String note,
+        String typeCatego,
+        Float soldeuseravant
+    ) {
+        this.categoryName = categoryName;
+        this.dateModif = dateModif;
+        this.montant = montant;
+        this.userLogin = userLogin;
+        this.note = note;
+        this.typeCatego = typeCatego;
+        this.soldeuseravant = soldeuseravant;
+    }
+
     // jhipster-needle-entity-add-field - JHipster will add fields here
     public String getId() {
         return id;

@@ -50,9 +50,6 @@ class CategoryResourceIT {
     private static final Float DEFAULT_MAX_MONTANT = 1F;
     private static final Float UPDATED_MAX_MONTANT = 2F;
 
-    private static final String DEFAULT_PERIODICTY = "AAAAAAAAAA";
-    private static final String UPDATED_PERIODICTY = "BBBBBBBBBB";
-
     private static final String ENTITY_API_URL = "/api/categories";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
 
@@ -79,8 +76,8 @@ class CategoryResourceIT {
             .color(DEFAULT_COLOR)
             .userLogin(DEFAULT_USER_LOGIN)
             .minMontant(DEFAULT_MIN_MONTANT)
-            .maxMontant(DEFAULT_MAX_MONTANT)
-            .periodicty(DEFAULT_PERIODICTY);
+            .maxMontant(DEFAULT_MAX_MONTANT);
+
         return category;
     }
 
@@ -99,8 +96,8 @@ class CategoryResourceIT {
             .color(UPDATED_COLOR)
             .userLogin(UPDATED_USER_LOGIN)
             .minMontant(UPDATED_MIN_MONTANT)
-            .maxMontant(UPDATED_MAX_MONTANT)
-            .periodicty(UPDATED_PERIODICTY);
+            .maxMontant(UPDATED_MAX_MONTANT);
+
         return category;
     }
 
@@ -130,7 +127,6 @@ class CategoryResourceIT {
         assertThat(testCategory.getUserLogin()).isEqualTo(DEFAULT_USER_LOGIN);
         assertThat(testCategory.getMinMontant()).isEqualTo(DEFAULT_MIN_MONTANT);
         assertThat(testCategory.getMaxMontant()).isEqualTo(DEFAULT_MAX_MONTANT);
-        assertThat(testCategory.getPeriodicty()).isEqualTo(DEFAULT_PERIODICTY);
     }
 
     @Test
@@ -232,8 +228,7 @@ class CategoryResourceIT {
             .andExpect(jsonPath("$.[*].color").value(hasItem(DEFAULT_COLOR)))
             .andExpect(jsonPath("$.[*].userLogin").value(hasItem(DEFAULT_USER_LOGIN)))
             .andExpect(jsonPath("$.[*].minMontant").value(hasItem(DEFAULT_MIN_MONTANT.doubleValue())))
-            .andExpect(jsonPath("$.[*].maxMontant").value(hasItem(DEFAULT_MAX_MONTANT.doubleValue())))
-            .andExpect(jsonPath("$.[*].periodicty").value(hasItem(DEFAULT_PERIODICTY)));
+            .andExpect(jsonPath("$.[*].maxMontant").value(hasItem(DEFAULT_MAX_MONTANT.doubleValue())));
     }
 
     @Test
@@ -254,8 +249,7 @@ class CategoryResourceIT {
             .andExpect(jsonPath("$.color").value(DEFAULT_COLOR))
             .andExpect(jsonPath("$.userLogin").value(DEFAULT_USER_LOGIN))
             .andExpect(jsonPath("$.minMontant").value(DEFAULT_MIN_MONTANT.doubleValue()))
-            .andExpect(jsonPath("$.maxMontant").value(DEFAULT_MAX_MONTANT.doubleValue()))
-            .andExpect(jsonPath("$.periodicty").value(DEFAULT_PERIODICTY));
+            .andExpect(jsonPath("$.maxMontant").value(DEFAULT_MAX_MONTANT.doubleValue()));
     }
 
     @Test
@@ -281,8 +275,7 @@ class CategoryResourceIT {
             .color(UPDATED_COLOR)
             .userLogin(UPDATED_USER_LOGIN)
             .minMontant(UPDATED_MIN_MONTANT)
-            .maxMontant(UPDATED_MAX_MONTANT)
-            .periodicty(UPDATED_PERIODICTY);
+            .maxMontant(UPDATED_MAX_MONTANT);
 
         restCategoryMockMvc
             .perform(
@@ -304,7 +297,6 @@ class CategoryResourceIT {
         assertThat(testCategory.getUserLogin()).isEqualTo(UPDATED_USER_LOGIN);
         assertThat(testCategory.getMinMontant()).isEqualTo(UPDATED_MIN_MONTANT);
         assertThat(testCategory.getMaxMontant()).isEqualTo(UPDATED_MAX_MONTANT);
-        assertThat(testCategory.getPeriodicty()).isEqualTo(UPDATED_PERIODICTY);
     }
 
     @Test
@@ -393,7 +385,6 @@ class CategoryResourceIT {
         assertThat(testCategory.getUserLogin()).isEqualTo(UPDATED_USER_LOGIN);
         assertThat(testCategory.getMinMontant()).isEqualTo(DEFAULT_MIN_MONTANT);
         assertThat(testCategory.getMaxMontant()).isEqualTo(UPDATED_MAX_MONTANT);
-        assertThat(testCategory.getPeriodicty()).isEqualTo(DEFAULT_PERIODICTY);
     }
 
     @Test
@@ -415,8 +406,7 @@ class CategoryResourceIT {
             .color(UPDATED_COLOR)
             .userLogin(UPDATED_USER_LOGIN)
             .minMontant(UPDATED_MIN_MONTANT)
-            .maxMontant(UPDATED_MAX_MONTANT)
-            .periodicty(UPDATED_PERIODICTY);
+            .maxMontant(UPDATED_MAX_MONTANT);
 
         restCategoryMockMvc
             .perform(
@@ -438,7 +428,6 @@ class CategoryResourceIT {
         assertThat(testCategory.getUserLogin()).isEqualTo(UPDATED_USER_LOGIN);
         assertThat(testCategory.getMinMontant()).isEqualTo(UPDATED_MIN_MONTANT);
         assertThat(testCategory.getMaxMontant()).isEqualTo(UPDATED_MAX_MONTANT);
-        assertThat(testCategory.getPeriodicty()).isEqualTo(UPDATED_PERIODICTY);
     }
 
     @Test

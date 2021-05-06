@@ -1,0 +1,24 @@
+{
+  "fields": [
+    {
+      "fieldName": "soldeUser",
+      "fieldType": "Float"
+    }
+  ],
+  "relationships": [
+    {
+      "relationshipName": "user",
+      "otherEntityName": "user",
+      "relationshipType": "one-to-one",
+      "relationshipValidateRules": [],
+      "otherEntityField": "login",
+      "ownerSide": true,
+      "otherEntityRelationshipName": "applicationUser"
+    }
+  ],
+  "service": "no",
+  "readOnly": false,
+  "pagination": "infinite-scroll",
+  "name": "ApplicationUser",
+  "changelogDate": "20210503143433"
+}
