@@ -49,6 +49,9 @@ public class AdminUserDTO {
     private Set<String> authorities;
 
     private Float soldeUser;
+    private Float soldeuserdepense;
+
+    private Float solduserrevenus;
 
     public AdminUserDTO() {
         // Empty constructor needed for Jackson.
@@ -176,6 +179,22 @@ public class AdminUserDTO {
 
     public Float getSoldeUser() {
         return soldeUser;
+    }
+
+    public Float getSoldeuserdepense() {
+        return soldeuserdepense;
+    }
+
+    public void setSoldeuserdepense(Float soldeuserdepense) {
+        this.soldeuserdepense = soldeuserdepense;
+    }
+
+    public Float getSolduserrevenus() {
+        return solduserrevenus;
+    }
+
+    public void setSolduserrevenus(Float solduserrevenus) {
+        this.solduserrevenus = solduserrevenus;
     }
 
     public void setSoldeUser(Float soldeUser) {

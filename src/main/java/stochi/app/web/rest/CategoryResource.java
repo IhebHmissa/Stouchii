@@ -4,9 +4,7 @@ import static stochi.app.security.SecurityUtils.getCurrentUserLoginn;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.Period;
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +12,9 @@ import java.util.Objects;
 import java.util.Optional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
@@ -101,6 +101,7 @@ public class CategoryResource {
                 " catego exists"
             );
         }
+        if (category.getMontant() == null) category.setMontant(0F);
         Category result = categoryService.save(category);
         return ResponseEntity
             .created(new URI("/api/categories/" + result.getId()))
@@ -193,100 +194,208 @@ public class CategoryResource {
             System.out.println(value);
 
             // History part !
-
+            if (value.getSoldeuserdepense() == null) value.setSoldeuserdepense(0F);
+            if (value.getSolduserrevenus() == null) value.setSolduserrevenus(0F);
+            userRepository.save(value);
             if ((category.getModifDate() != null) & (category.getNote() != null)) {
-                HistoryLine hist = new HistoryLine(
-                    catNEW.getNameCatego(),
-                    category.getModifDate(),
-                    montan,
-                    catNEW.getUserLogin(),
-                    catNEW.getType(),
-                    value.getSoldeUser(),
-                    category.getNote()
-                );
-                historyLineRepository.save(hist);
-                System.out.println(hist);
+                if (catNEW.getType().equals("Depense")) {
+                    value.setSoldeuserdepense(value.getSoldeuserdepense() + montan);
+                    userRepository.save(value);
+                    HistoryLine hist = new HistoryLine(
+                        catNEW.getNameCatego(),
+                        category.getModifDate(),
+                        montan,
+                        catNEW.getUserLogin(),
+                        category.getNote(),
+                        catNEW.getType(),
+                        value.getSoldeUser(),
+                        value.getSoldeuserdepense() + category.getMontant(),
+                        catNEW.getOriginType(),
+                        catNEW.getNameIcon(),
+                        catNEW.getColor()
+                    );
+                    historyLineRepository.save(hist);
+                    System.out.println(hist);
+                } else {
+                    value.setSolduserrevenus(value.getSolduserrevenus() + montan);
+                    userRepository.save(value);
+                    HistoryLine hist = new HistoryLine(
+                        catNEW.getNameCatego(),
+                        category.getModifDate(),
+                        montan,
+                        catNEW.getUserLogin(),
+                        category.getNote(),
+                        value.getSolduserrevenus(),
+                        catNEW.getType(),
+                        value.getSoldeUser(),
+                        catNEW.getOriginType(),
+                        catNEW.getNameIcon(),
+                        catNEW.getColor()
+                    );
+                    historyLineRepository.save(hist);
+                    System.out.println(hist);
+                }
             } else if ((category.getModifDate() == null) & (category.getNote() != null)) {
-                HistoryLine hist = new HistoryLine(
-                    catNEW.getNameCatego(),
-                    ZonedDateTime.now(),
-                    montan,
-                    catNEW.getUserLogin(),
-                    catNEW.getType(),
-                    value.getSoldeUser(),
-                    category.getNote()
-                );
-                historyLineRepository.save(hist);
-                System.out.println(hist);
+                if (catNEW.getType().equals("Depense")) {
+                    value.setSoldeuserdepense(value.getSoldeuserdepense() + montan);
+                    userRepository.save(value);
+                    HistoryLine hist = new HistoryLine(
+                        catNEW.getNameCatego(),
+                        montan,
+                        catNEW.getUserLogin(),
+                        category.getNote(),
+                        catNEW.getType(),
+                        value.getSoldeUser(),
+                        value.getSoldeuserdepense() + category.getMontant(),
+                        catNEW.getOriginType(),
+                        catNEW.getNameIcon(),
+                        catNEW.getColor()
+                    );
+                    historyLineRepository.save(hist);
+                    System.out.println(hist);
+                } else {
+                    value.setSolduserrevenus(value.getSolduserrevenus() + montan);
+                    userRepository.save(value);
+                    HistoryLine hist = new HistoryLine(
+                        catNEW.getNameCatego(),
+                        montan,
+                        catNEW.getUserLogin(),
+                        category.getNote(),
+                        value.getSolduserrevenus(),
+                        catNEW.getType(),
+                        value.getSoldeUser(),
+                        catNEW.getOriginType(),
+                        catNEW.getNameIcon(),
+                        catNEW.getColor()
+                    );
+                    historyLineRepository.save(hist);
+                    System.out.println(hist);
+                }
             } else if ((category.getModifDate() != null) & (category.getNote() == null)) {
-                HistoryLine hist = new HistoryLine(
-                    catNEW.getNameCatego(),
-                    category.getModifDate(),
-                    montan,
-                    catNEW.getUserLogin(),
-                    catNEW.getType(),
-                    value.getSoldeUser()
-                );
-                historyLineRepository.save(hist);
-                System.out.println(hist);
+                if (catNEW.getType().equals("Depense")) {
+                    value.setSoldeuserdepense(value.getSoldeuserdepense() + montan);
+                    userRepository.save(value);
+                    HistoryLine hist = new HistoryLine(
+                        catNEW.getNameCatego(),
+                        category.getModifDate(),
+                        montan,
+                        catNEW.getUserLogin(),
+                        catNEW.getType(),
+                        value.getSoldeUser(),
+                        value.getSoldeuserdepense() + category.getMontant(),
+                        catNEW.getOriginType(),
+                        catNEW.getNameIcon(),
+                        catNEW.getColor()
+                    );
+                    historyLineRepository.save(hist);
+                    System.out.println(hist);
+                } else {
+                    value.setSolduserrevenus(value.getSolduserrevenus() + montan);
+                    userRepository.save(value);
+                    HistoryLine hist = new HistoryLine(
+                        catNEW.getNameCatego(),
+                        category.getModifDate(),
+                        montan,
+                        catNEW.getUserLogin(),
+                        value.getSolduserrevenus(),
+                        catNEW.getType(),
+                        value.getSoldeUser(),
+                        catNEW.getOriginType(),
+                        catNEW.getNameIcon(),
+                        catNEW.getColor()
+                    );
+                    historyLineRepository.save(hist);
+                    System.out.println(hist);
+                }
             } else {
-                HistoryLine hist = new HistoryLine(
-                    catNEW.getNameCatego(),
-                    ZonedDateTime.now(),
-                    montan,
-                    catNEW.getUserLogin(),
-                    catNEW.getType(),
-                    value.getSoldeUser()
-                );
-                historyLineRepository.save(hist);
-                System.out.println(hist);
+                if (catNEW.getType().equals("Depense")) {
+                    value.setSoldeuserdepense(value.getSoldeuserdepense() + montan);
+                    userRepository.save(value);
+                    HistoryLine hist = new HistoryLine(
+                        catNEW.getNameCatego(),
+                        montan,
+                        catNEW.getUserLogin(),
+                        catNEW.getType(),
+                        value.getSoldeUser(),
+                        value.getSoldeuserdepense() + category.getMontant(),
+                        catNEW.getOriginType(),
+                        catNEW.getNameIcon(),
+                        catNEW.getColor()
+                    );
+                    historyLineRepository.save(hist);
+                    System.out.println(hist);
+                } else {
+                    value.setSolduserrevenus(value.getSolduserrevenus() + montan);
+                    userRepository.save(value);
+                    HistoryLine hist = new HistoryLine(
+                        catNEW.getNameCatego(),
+                        montan,
+                        catNEW.getUserLogin(),
+                        value.getSolduserrevenus(),
+                        catNEW.getType(),
+                        value.getSoldeUser(),
+                        catNEW.getOriginType(),
+                        catNEW.getNameIcon(),
+                        catNEW.getColor()
+                    );
+                    historyLineRepository.save(hist);
+                    System.out.println(hist);
+                }
             }
 
             // Notificiation part !
-            if (
-                catNEW.getAverage() != null &
-                categoryRepository.findOneByUserLoginAndNameCatego(getCurrentUserLoginn(), "Salary").getPeriodictyy().getFixedMontant() !=
-                null
-            ) {
-                Float salary = categoryRepository
-                    .findOneByUserLoginAndNameCatego(getCurrentUserLoginn(), "Salary")
-                    .getPeriodictyy()
-                    .getFixedMontant();
-
+            if (categoryRepository.findOneByUserLoginAndNameCatego(getCurrentUserLoginn(), "Salary").getPeriodictyy() != null) {
                 if (
-                    (catNEW.getMontant() > 0.9 * salary * catNEW.getAverage()) & (catNEW.getMontant() < 0.95 * salary * catNEW.getAverage())
+                    catNEW.getAverage() != null &
+                    categoryRepository
+                        .findOneByUserLoginAndNameCatego(getCurrentUserLoginn(), "Salary")
+                        .getPeriodictyy()
+                        .getFixedMontant() !=
+                    null
                 ) {
-                    Notification notif = new Notification(
-                        catNEW.getMontant(),
-                        value.getLogin(),
-                        catNEW.getNameCatego(),
-                        ZonedDateTime.now(),
-                        "90% exceeded"
-                    );
-                    notificationRepository.save(notif);
-                    System.out.println(notif);
-                } else if (
-                    (catNEW.getMontant() > 0.95 * salary * catNEW.getAverage()) & (catNEW.getMontant() < salary * catNEW.getAverage())
-                ) {
-                    Notification notif = new Notification(
-                        catNEW.getMontant(),
-                        value.getLogin(),
-                        catNEW.getNameCatego(),
-                        ZonedDateTime.now(),
-                        "95% exceeded"
-                    );
-                    notificationRepository.save(notif);
-                    System.out.println(notif);
-                } else if (catNEW.getMontant() > salary * catNEW.getAverage()) {
-                    Notification notif = new Notification(
-                        catNEW.getMontant(),
-                        value.getLogin(),
-                        catNEW.getNameCatego(),
-                        ZonedDateTime.now(),
-                        "100% exceeded"
-                    );
-                    notificationRepository.save(notif);
-                    System.out.println(notif);
+                    Float salary = categoryRepository
+                        .findOneByUserLoginAndNameCatego(getCurrentUserLoginn(), "Salary")
+                        .getPeriodictyy()
+                        .getFixedMontant();
+                    if (catNEW.getMontant() != null) {
+                        if (
+                            (catNEW.getMontant() > 0.9 * salary * catNEW.getAverage()) &
+                            (catNEW.getMontant() < 0.95 * salary * catNEW.getAverage())
+                        ) {
+                            Notification notif = new Notification(
+                                catNEW.getMontant(),
+                                value.getLogin(),
+                                catNEW.getNameCatego(),
+                                LocalDate.now(),
+                                "90% exceeded"
+                            );
+                            notificationRepository.save(notif);
+                            System.out.println(notif);
+                        } else if (
+                            (catNEW.getMontant() > 0.95 * salary * catNEW.getAverage()) &
+                            (catNEW.getMontant() < salary * catNEW.getAverage())
+                        ) {
+                            Notification notif = new Notification(
+                                catNEW.getMontant(),
+                                value.getLogin(),
+                                catNEW.getNameCatego(),
+                                LocalDate.now(),
+                                "95% exceeded"
+                            );
+                            notificationRepository.save(notif);
+                            System.out.println(notif);
+                        } else if (catNEW.getMontant() > salary * catNEW.getAverage()) {
+                            Notification notif = new Notification(
+                                catNEW.getMontant(),
+                                value.getLogin(),
+                                catNEW.getNameCatego(),
+                                LocalDate.now(),
+                                "100% exceeded"
+                            );
+                            notificationRepository.save(notif);
+                            System.out.println(notif);
+                        }
+                    }
                 }
             }
         }
@@ -412,21 +521,52 @@ public class CategoryResource {
         if (catego.getType().equals("Depense")) user.setSoldeUser(user.getSoldeUser() - catego.getPeriodictyy().getFixedMontant());
         if (catego.getType().equals("Revenus")) user.setSoldeUser(user.getSoldeUser() + catego.getPeriodictyy().getFixedMontant());
         userRepository.save(user);
-        HistoryLine hist = new HistoryLine(
-            catego.getNameCatego(),
-            ZonedDateTime.now(),
-            catego.getPeriodictyy().getFixedMontant(),
-            catego.getUserLogin(),
-            catego.getType(),
-            user.getSoldeUser()
-        );
-        historyLineRepository.save(hist);
+        // History part
+        if (user.getSoldeuserdepense() == null) user.setSoldeuserdepense(0F);
+        if (user.getSolduserrevenus() == null) user.setSolduserrevenus(0F);
+        userRepository.save(user);
+        if (catego.getType().equals("Depense")) {
+            user.setSoldeuserdepense(user.getSoldeuserdepense() + catego.getPeriodictyy().getFixedMontant());
+            userRepository.save(user);
+            HistoryLine hist = new HistoryLine(
+                catego.getNameCatego(),
+                LocalDate.now(),
+                catego.getPeriodictyy().getFixedMontant(),
+                catego.getUserLogin(),
+                catego.getType(),
+                user.getSoldeUser(),
+                user.getSoldeuserdepense(),
+                catego.getOriginType(),
+                catego.getNameIcon(),
+                catego.getColor()
+            );
+            historyLineRepository.save(hist);
+            System.out.println(hist);
+        } else {
+            user.setSolduserrevenus(user.getSolduserrevenus() + catego.getPeriodictyy().getFixedMontant());
+            userRepository.save(user);
+            HistoryLine hist = new HistoryLine(
+                catego.getNameCatego(),
+                LocalDate.now(),
+                catego.getPeriodictyy().getFixedMontant(),
+                catego.getUserLogin(),
+                user.getSolduserrevenus(),
+                catego.getType(),
+                user.getSoldeUser(),
+                catego.getOriginType(),
+                catego.getNameIcon(),
+                catego.getColor()
+            );
+            historyLineRepository.save(hist);
+            System.out.println(hist);
+        }
+        // Notifications part
         if (catego.getType().equals("Depense")) {
             Notification notif = new Notification(
                 catego.getPeriodictyy().getFixedMontant(),
                 user.getLogin(),
                 catego.getNameCatego(),
-                ZonedDateTime.now(),
+                LocalDate.now(),
                 "Money out"
             );
             notificationRepository.save(notif);
@@ -437,7 +577,7 @@ public class CategoryResource {
                 catego.getPeriodictyy().getFixedMontant(),
                 user.getLogin(),
                 catego.getNameCatego(),
-                ZonedDateTime.now(),
+                LocalDate.now(),
                 "Money IN"
             );
             notificationRepository.save(notif);
@@ -445,9 +585,87 @@ public class CategoryResource {
         }
     }
 
+    @GetMapping(value = "/categories/piechartdepense")
+    public String piechartdepense() {
+        JSONArray ja = new JSONArray();
+        List<Category> listecategoDepense = categoryRepository.findByUserLoginAndTypeAndOriginType(
+            getCurrentUserLoginn(),
+            "Depense",
+            "Catego"
+        );
+        try {
+            for (Category catego : listecategoDepense) {
+                System.out.println("here");
+                JSONObject jo = new JSONObject();
+                jo.put("value", catego.getMontant());
+                jo.put("label", catego.getNameCatego());
+                jo.put("color", catego.getColor());
+                ja.put(jo);
+            }
+        } catch (JSONException e) {
+            System.out.println("here2");
+            e.printStackTrace();
+        }
+
+        return ja.toString();
+    }
+
+    @GetMapping(value = "/categories/pieglobale")
+    public String pieglobale() {
+        JSONArray ja = new JSONArray();
+        List<Category> listecategoDepense = categoryRepository.findByUserLoginAndOriginType(getCurrentUserLoginn(), "Catego");
+        try {
+            for (Category catego : listecategoDepense) {
+                System.out.println("here");
+                JSONObject jo = new JSONObject();
+                jo.put("value", catego.getMontant());
+                jo.put("label", catego.getNameCatego());
+                jo.put("color", catego.getColor());
+                ja.put(jo);
+            }
+        } catch (JSONException e) {
+            System.out.println("here2");
+            e.printStackTrace();
+        }
+
+        return ja.toString();
+    }
+
+    @GetMapping(value = "/categories/barchartrevenus")
+    public String barchartREvenus() {
+        JSONArray dataR = new JSONArray();
+        List<Category> hist3 = categoryRepository.findByUserLoginAndOriginType(getCurrentUserLoginn(), "Income");
+        List<Category> histo4 = categoryRepository.findByUserLoginAndTypeAndOriginType(getCurrentUserLoginn(), "Revenus", "Catego");
+        for (Category cat : histo4) {
+            if (!cat.getNameCatego().equals("Income")) hist3.add(cat);
+        }
+        try {
+            for (Category hist2 : hist3) {
+                JSONObject jo = new JSONObject();
+                jo.put("x", hist2.getNameCatego());
+                jo.put("y", hist2.getMontant());
+                dataR.put(jo);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        JSONArray JA = new JSONArray();
+        try {
+            JSONObject jo = new JSONObject();
+            jo.put("seriesName", "Revenus");
+            jo.put("data", dataR);
+            jo.put("color", "yellow");
+            JA.put(jo);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return JA.toString();
+    }
+
     /*
     Cette fonction se répéte chaque jour a 7h00
-    */@Scheduled(cron = "0 0 7 * * *", zone = "Africa/Tunis")
+    */
+    @Scheduled(cron = "0 0 7 * * *", zone = "Africa/Tunis")
     public void Scheduled_task() {
         System.out.println("This a repeated task");
 
@@ -458,8 +676,8 @@ public class CategoryResource {
                     System.out.println(catego.getNameCatego());
                     boolean stayin = true;
                     if (catego.getPeriodictyy().getDateFin() != null) {
-                        System.out.println("HEY " + catego.getPeriodictyy().getDateFin().isBefore(ZonedDateTime.now()));
-                        if (catego.getPeriodictyy().getDateFin().isBefore(ZonedDateTime.now())) {
+                        System.out.println("HEY " + catego.getPeriodictyy().getDateFin().isBefore(LocalDate.now()));
+                        if (catego.getPeriodictyy().getDateFin().isBefore(LocalDate.now())) {
                             catego.setPeriodictyy(null);
                             System.out.println("This catego periodicity is deleted ");
                             categoryRepository.save(catego);
@@ -469,7 +687,7 @@ public class CategoryResource {
                     if (stayin) {
                         if (
                             catego.getPeriodictyy().getFrequancy().equals("mois") &
-                            catego.getPeriodictyy().getDateDeb().isBefore(ZonedDateTime.now())
+                            catego.getPeriodictyy().getDateDeb().isBefore(LocalDate.now())
                         ) {
                             if (ZonedDateTime.now().getDayOfMonth() == catego.getPeriodictyy().getDateDeb().getDayOfMonth()) {
                                 if (catego.getPeriodictyy().getDateFin() == null) {
@@ -477,7 +695,7 @@ public class CategoryResource {
                                     addperodicitysolde(catego, user);
                                 }
                                 if ((catego.getPeriodictyy().getDateFin() != null)) if (
-                                    catego.getPeriodictyy().getDateFin().isBefore(ZonedDateTime.now())
+                                    catego.getPeriodictyy().getDateFin().isBefore(LocalDate.now())
                                 ) {
                                     System.out.println("I m here2");
                                     addperodicitysolde(catego, user);
@@ -487,7 +705,7 @@ public class CategoryResource {
 
                         if (
                             catego.getPeriodictyy().getFrequancy().equals("mois") &
-                            catego.getPeriodictyy().getDateDeb().isAfter(ZonedDateTime.now())
+                            catego.getPeriodictyy().getDateDeb().isAfter(LocalDate.now())
                         ) {
                             if (ZonedDateTime.now().getDayOfMonth() == catego.getPeriodictyy().getDateDeb().minusDays(1).getDayOfMonth()) {
                                 if (catego.getPeriodictyy().getDateFin() == null) {
@@ -495,20 +713,20 @@ public class CategoryResource {
                                         catego.getMontant(),
                                         user.getLogin(),
                                         catego.getNameCatego(),
-                                        ZonedDateTime.now(),
+                                        LocalDate.now(),
                                         "1Day left"
                                     );
                                     notificationRepository.save(notif);
                                     System.out.println(notif);
                                 }
                                 if ((catego.getPeriodictyy().getDateFin() != null)) if (
-                                    catego.getPeriodictyy().getDateFin().isBefore(ZonedDateTime.now())
+                                    catego.getPeriodictyy().getDateFin().isBefore(LocalDate.now())
                                 ) {
                                     Notification notif = new Notification(
                                         catego.getMontant(),
                                         user.getLogin(),
                                         catego.getNameCatego(),
-                                        ZonedDateTime.now(),
+                                        LocalDate.now(),
                                         "1Day left"
                                     );
                                     notificationRepository.save(notif);
@@ -519,20 +737,20 @@ public class CategoryResource {
 
                         if (
                             catego.getPeriodictyy().getFrequancy().equals("jour") &
-                            catego.getPeriodictyy().getDateDeb().isBefore(ZonedDateTime.now())
+                            catego.getPeriodictyy().getDateDeb().isBefore(LocalDate.now())
                         ) {
                             System.out.println(catego.getPeriodictyy().getDateDeb());
                             System.out.println(ZonedDateTime.now());
                             if (catego.getPeriodictyy().getDateFin() == null) addperodicitysolde(catego, user);
 
                             if (catego.getPeriodictyy().getDateFin() != null) {
-                                if (catego.getPeriodictyy().getDateFin().isAfter(ZonedDateTime.now())) addperodicitysolde(catego, user);
+                                if (catego.getPeriodictyy().getDateFin().isAfter(LocalDate.now())) addperodicitysolde(catego, user);
                             }
                         }
 
                         if (
                             catego.getPeriodictyy().getFrequancy().equals("semaine") &
-                            catego.getPeriodictyy().getDateDeb().isBefore(ZonedDateTime.now())
+                            catego.getPeriodictyy().getDateDeb().isBefore(LocalDate.now())
                         ) {
                             if ((catego.getPeriodictyy().getDateFin() == null)) {
                                 if (catego.getPeriodictyy().getNumberleft() == 0) {
@@ -544,7 +762,7 @@ public class CategoryResource {
                                 categoryRepository.save(catego);
                             }
                             if ((catego.getPeriodictyy().getDateFin() != null)) {
-                                if (catego.getPeriodictyy().getDateFin().isAfter(ZonedDateTime.now())) {
+                                if (catego.getPeriodictyy().getDateFin().isAfter(LocalDate.now())) {
                                     if (catego.getPeriodictyy().getNumberleft() == 0) {
                                         addperodicitysolde(catego, user);
                                         catego.setperiodicity(catego.getPeriodictyy().getNumberleft() + 1);
@@ -557,7 +775,7 @@ public class CategoryResource {
                         }
                         if (
                             catego.getPeriodictyy().getFrequancy().equals("2semaine") &
-                            catego.getPeriodictyy().getDateDeb().isBefore(ZonedDateTime.now())
+                            catego.getPeriodictyy().getDateDeb().isBefore(LocalDate.now())
                         ) {
                             if ((catego.getPeriodictyy().getDateFin() == null)) {
                                 if (catego.getPeriodictyy().getNumberleft() == 0) {
@@ -569,7 +787,7 @@ public class CategoryResource {
                                 categoryRepository.save(catego);
                             }
                             if ((catego.getPeriodictyy().getDateFin() != null)) {
-                                if (catego.getPeriodictyy().getDateFin().isAfter(ZonedDateTime.now())) {
+                                if (catego.getPeriodictyy().getDateFin().isAfter(LocalDate.now())) {
                                     if (catego.getPeriodictyy().getNumberleft() == 0) {
                                         addperodicitysolde(catego, user);
                                         catego.setperiodicity(catego.getPeriodictyy().getNumberleft() + 1);
@@ -583,7 +801,7 @@ public class CategoryResource {
 
                         if (
                             catego.getPeriodictyy().getFrequancy().equals("trimestre") &
-                            catego.getPeriodictyy().getDateDeb().isBefore(ZonedDateTime.now()) &
+                            catego.getPeriodictyy().getDateDeb().isBefore(LocalDate.now()) &
                             (ZonedDateTime.now().getDayOfMonth() == catego.getPeriodictyy().getDateDeb().getDayOfMonth())
                         ) {
                             if ((catego.getPeriodictyy().getDateFin() == null)) {
@@ -596,7 +814,7 @@ public class CategoryResource {
                                 categoryRepository.save(catego);
                             }
                             if ((catego.getPeriodictyy().getDateFin() != null)) {
-                                if (catego.getPeriodictyy().getDateFin().isAfter(ZonedDateTime.now())) {
+                                if (catego.getPeriodictyy().getDateFin().isAfter(LocalDate.now())) {
                                     if (catego.getPeriodictyy().getNumberleft() == 0) {
                                         addperodicitysolde(catego, user);
                                         catego.setperiodicity(catego.getPeriodictyy().getNumberleft() + 1);
@@ -610,7 +828,7 @@ public class CategoryResource {
 
                         if (
                             catego.getPeriodictyy().getFrequancy().equals("semestre") &
-                            catego.getPeriodictyy().getDateDeb().isBefore(ZonedDateTime.now()) &
+                            catego.getPeriodictyy().getDateDeb().isBefore(LocalDate.now()) &
                             (ZonedDateTime.now().getDayOfMonth() == catego.getPeriodictyy().getDateDeb().getDayOfMonth())
                         ) {
                             if ((catego.getPeriodictyy().getDateFin() == null)) {
@@ -623,7 +841,7 @@ public class CategoryResource {
                                 categoryRepository.save(catego);
                             }
                             if ((catego.getPeriodictyy().getDateFin() != null)) {
-                                if (catego.getPeriodictyy().getDateFin().isAfter(ZonedDateTime.now())) {
+                                if (catego.getPeriodictyy().getDateFin().isAfter(LocalDate.now())) {
                                     if (catego.getPeriodictyy().getNumberleft() == 0) {
                                         addperodicitysolde(catego, user);
                                         catego.setperiodicity(catego.getPeriodictyy().getNumberleft() + 1);
@@ -636,7 +854,7 @@ public class CategoryResource {
                         }
                         if (
                             catego.getPeriodictyy().getFrequancy().equals("annee") &
-                            catego.getPeriodictyy().getDateDeb().isBefore(ZonedDateTime.now())
+                            catego.getPeriodictyy().getDateDeb().isBefore(LocalDate.now())
                         ) {
                             if (ZonedDateTime.now().getDayOfYear() == catego.getPeriodictyy().getDateDeb().getDayOfYear()) {
                                 if (catego.getPeriodictyy().getDateFin() == null) {
@@ -644,7 +862,7 @@ public class CategoryResource {
                                     addperodicitysolde(catego, user);
                                 }
                                 if ((catego.getPeriodictyy().getDateFin() != null)) if (
-                                    catego.getPeriodictyy().getDateFin().isBefore(ZonedDateTime.now())
+                                    catego.getPeriodictyy().getDateFin().isBefore(LocalDate.now())
                                 ) {
                                     System.out.println("I m here4");
                                     addperodicitysolde(catego, user);
@@ -655,43 +873,5 @@ public class CategoryResource {
                 }
             }
         }
-    }
-
-    @GetMapping(value = "/categories/piechartdepense")
-    public List<List<Object>> piechartdepense() {
-        List<List<Object>> resultat = new ArrayList<List<Object>>();
-        List<Category> listecategoDepense = categoryRepository.findByUserLoginAndTypeAndOriginType(
-            getCurrentUserLoginn(),
-            "Depense",
-            "Catego"
-        );
-        for (Category catego : listecategoDepense) {
-            List<Object> listaa = new ArrayList<Object>();
-
-            listaa.add(catego.getNameCatego());
-            listaa.add(catego.getMontant());
-            listaa.add(false);
-            resultat.add(listaa);
-        }
-        return resultat;
-    }
-
-    @GetMapping(value = "/categories/piechartRevenus")
-    public List<List<Object>> piechartRevenus() {
-        List<List<Object>> resultat = new ArrayList<List<Object>>();
-        List<Category> listecategoDepense = categoryRepository.findByUserLoginAndTypeAndOriginType(
-            getCurrentUserLoginn(),
-            "Revenus",
-            "Catego"
-        );
-        for (Category catego : listecategoDepense) {
-            List<Object> listaa = new ArrayList<Object>();
-
-            listaa.add(catego.getNameCatego());
-            listaa.add(catego.getMontant());
-            listaa.add(false);
-            resultat.add(listaa);
-        }
-        return resultat;
     }
 }

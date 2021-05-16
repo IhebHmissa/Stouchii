@@ -2,6 +2,7 @@ package stochi.app.domain;
 
 import java.io.Serializable;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZonedDateTime;
 import org.springframework.data.annotation.Id;
@@ -20,10 +21,10 @@ public class Periode implements Serializable {
     private String id;
 
     @Field("date_deb")
-    private ZonedDateTime dateDeb;
+    private LocalDate dateDeb;
 
     @Field("date_fin")
-    private ZonedDateTime dateFin;
+    private LocalDate dateFin;
 
     @Field("frequancy")
     private String frequancy;
@@ -37,9 +38,9 @@ public class Periode implements Serializable {
     @Field("type_catego")
     private String typeCatego;
 
-    private long[] calculDurations(ZonedDateTime DDB, ZonedDateTime DDF) {
-        Period period = Period.between(DDB.toLocalDate(), DDF.toLocalDate());
-        Duration duration = Duration.between(DDB.toLocalTime(), DDF.toLocalTime());
+    private long[] calculDurations(LocalDate DDB, LocalDate DDF) {
+        Period period = Period.between(DDB, DDF);
+        Duration duration = Duration.between(DDB, DDF);
 
         if (duration.isNegative()) {
             period = period.minusDays(1);
@@ -49,7 +50,7 @@ public class Periode implements Serializable {
 
     public Periode() {}
 
-    public Periode(ZonedDateTime dateDeb, ZonedDateTime dateFin, String frequancy, Float fixedMontant, String typeCatego) {
+    public Periode(LocalDate dateDeb, LocalDate dateFin, String frequancy, Float fixedMontant, String typeCatego) {
         this.dateDeb = dateDeb;
         this.dateFin = dateFin;
         this.frequancy = frequancy;
@@ -80,29 +81,29 @@ public class Periode implements Serializable {
         return this;
     }
 
-    public ZonedDateTime getDateDeb() {
+    public LocalDate getDateDeb() {
         return this.dateDeb;
     }
 
-    public Periode dateDeb(ZonedDateTime dateDeb) {
+    public Periode dateDeb(LocalDate dateDeb) {
         this.dateDeb = dateDeb;
         return this;
     }
 
-    public void setDateDeb(ZonedDateTime dateDeb) {
+    public void setDateDeb(LocalDate dateDeb) {
         this.dateDeb = dateDeb;
     }
 
-    public ZonedDateTime getDateFin() {
+    public LocalDate getDateFin() {
         return this.dateFin;
     }
 
-    public Periode dateFin(ZonedDateTime dateFin) {
+    public Periode dateFin(LocalDate dateFin) {
         this.dateFin = dateFin;
         return this;
     }
 
-    public void setDateFin(ZonedDateTime dateFin) {
+    public void setDateFin(LocalDate dateFin) {
         this.dateFin = dateFin;
     }
 

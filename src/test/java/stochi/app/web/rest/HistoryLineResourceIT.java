@@ -4,12 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static stochi.app.web.rest.TestUtil.sameInstant;
 
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,8 +30,8 @@ class HistoryLineResourceIT {
     private static final String DEFAULT_CATEGORY_NAME = "AAAAAAAAAA";
     private static final String UPDATED_CATEGORY_NAME = "BBBBBBBBBB";
 
-    private static final ZonedDateTime DEFAULT_DATE_MODIF = ZonedDateTime.ofInstant(Instant.ofEpochMilli(0L), ZoneOffset.UTC);
-    private static final ZonedDateTime UPDATED_DATE_MODIF = ZonedDateTime.now(ZoneId.systemDefault()).withNano(0);
+    private static final LocalDate DEFAULT_DATE_MODIF = LocalDate.ofInstant(Instant.ofEpochMilli(0L), ZoneOffset.UTC);
+    private static final LocalDate UPDATED_DATE_MODIF = LocalDate.now(ZoneId.systemDefault());
 
     private static final Float DEFAULT_MONTANT = 1F;
     private static final Float UPDATED_MONTANT = 2F;
@@ -197,7 +193,6 @@ class HistoryLineResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(historyLine.getId())))
             .andExpect(jsonPath("$.[*].categoryName").value(hasItem(DEFAULT_CATEGORY_NAME)))
-            .andExpect(jsonPath("$.[*].dateModif").value(hasItem(sameInstant(DEFAULT_DATE_MODIF))))
             .andExpect(jsonPath("$.[*].montant").value(hasItem(DEFAULT_MONTANT.doubleValue())))
             .andExpect(jsonPath("$.[*].userLogin").value(hasItem(DEFAULT_USER_LOGIN)))
             .andExpect(jsonPath("$.[*].note").value(hasItem(DEFAULT_NOTE)))
@@ -216,7 +211,6 @@ class HistoryLineResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(historyLine.getId()))
             .andExpect(jsonPath("$.categoryName").value(DEFAULT_CATEGORY_NAME))
-            .andExpect(jsonPath("$.dateModif").value(sameInstant(DEFAULT_DATE_MODIF)))
             .andExpect(jsonPath("$.montant").value(DEFAULT_MONTANT.doubleValue()))
             .andExpect(jsonPath("$.userLogin").value(DEFAULT_USER_LOGIN))
             .andExpect(jsonPath("$.note").value(DEFAULT_NOTE))

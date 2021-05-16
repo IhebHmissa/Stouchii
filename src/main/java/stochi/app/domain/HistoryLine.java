@@ -1,6 +1,7 @@
 package stochi.app.domain;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import javax.validation.constraints.*;
 import org.springframework.data.annotation.Id;
@@ -24,7 +25,7 @@ public class HistoryLine implements Serializable {
 
     @NotNull
     @Field("date_modif")
-    private ZonedDateTime dateModif;
+    private LocalDate dateModif;
 
     @NotNull
     @Field("montant")
@@ -42,50 +43,29 @@ public class HistoryLine implements Serializable {
     @Field("soldeuseravant")
     private Float soldeuseravant;
 
+    private Float depensechart;
+    private Float revenuschart;
+
+    private String origintype;
+
+    private String color;
+
+    private String icon;
+
     public HistoryLine() {}
 
     public HistoryLine(
         @NotNull String categoryName,
-        @NotNull ZonedDateTime dateModif,
-        @NotNull Float montant,
-        String userLogin,
-        String typeCatego,
-        Float soldeuseravant
-    ) {
-        this.categoryName = categoryName;
-        this.dateModif = dateModif;
-        this.montant = montant;
-        this.userLogin = userLogin;
-        this.typeCatego = typeCatego;
-        this.soldeuseravant = soldeuseravant;
-    }
-
-    public HistoryLine(
-        @NotNull String categoryName,
-        @NotNull ZonedDateTime dateModif,
-        @NotNull Float montant,
-        String userLogin,
-        String typeCatego,
-        Float soldeuseravant,
-        String note
-    ) {
-        this.categoryName = categoryName;
-        this.dateModif = dateModif;
-        this.montant = montant;
-        this.userLogin = userLogin;
-        this.typeCatego = typeCatego;
-        this.soldeuseravant = soldeuseravant;
-        this.note = note;
-    }
-
-    public HistoryLine(
-        @NotNull String categoryName,
-        @NotNull ZonedDateTime dateModif,
+        @NotNull LocalDate dateModif,
         @NotNull Float montant,
         String userLogin,
         String note,
         String typeCatego,
-        Float soldeuseravant
+        Float soldeuseravant,
+        Float depensechart,
+        String origintype,
+        String icon,
+        String color
     ) {
         this.categoryName = categoryName;
         this.dateModif = dateModif;
@@ -94,6 +74,249 @@ public class HistoryLine implements Serializable {
         this.note = note;
         this.typeCatego = typeCatego;
         this.soldeuseravant = soldeuseravant;
+        this.depensechart = depensechart;
+        this.origintype = origintype;
+        this.icon = icon;
+        this.color = color;
+    }
+
+    public HistoryLine(
+        @NotNull String categoryName,
+        @NotNull LocalDate dateModif,
+        @NotNull Float montant,
+        String userLogin,
+        String note,
+        Float revenuschart,
+        String typeCatego,
+        Float soldeuseravant,
+        String origintype,
+        String icon,
+        String color
+    ) {
+        this.categoryName = categoryName;
+        this.dateModif = dateModif;
+        this.montant = montant;
+        this.userLogin = userLogin;
+        this.note = note;
+        this.revenuschart = revenuschart;
+        this.typeCatego = typeCatego;
+        this.soldeuseravant = soldeuseravant;
+        this.origintype = origintype;
+        this.icon = icon;
+        this.color = color;
+    }
+
+    public HistoryLine(
+        @NotNull String categoryName,
+        @NotNull LocalDate dateModif,
+        @NotNull Float montant,
+        String userLogin,
+        String typeCatego,
+        Float soldeuseravant,
+        Float depensechart,
+        String origintype,
+        String icon,
+        String color
+    ) {
+        this.categoryName = categoryName;
+        this.dateModif = dateModif;
+        this.montant = montant;
+        this.userLogin = userLogin;
+
+        this.typeCatego = typeCatego;
+        this.soldeuseravant = soldeuseravant;
+        this.depensechart = depensechart;
+        this.origintype = origintype;
+        this.icon = icon;
+        this.color = color;
+    }
+
+    public HistoryLine(
+        @NotNull String categoryName,
+        @NotNull LocalDate dateModif,
+        @NotNull Float montant,
+        String userLogin,
+        Float revenuschart,
+        String typeCatego,
+        Float soldeuseravant,
+        String origintype,
+        String icon,
+        String color
+    ) {
+        this.categoryName = categoryName;
+        this.dateModif = dateModif;
+        this.montant = montant;
+        this.userLogin = userLogin;
+
+        this.revenuschart = revenuschart;
+        this.typeCatego = typeCatego;
+        this.soldeuseravant = soldeuseravant;
+        this.origintype = origintype;
+        this.icon = icon;
+        this.color = color;
+    }
+
+    public HistoryLine(
+        @NotNull String categoryName,
+        @NotNull Float montant,
+        String userLogin,
+        String note,
+        String typeCatego,
+        Float soldeuseravant,
+        Float depensechart,
+        String origintype,
+        String icon,
+        String color
+    ) {
+        this.categoryName = categoryName;
+        this.montant = montant;
+        this.userLogin = userLogin;
+        this.note = note;
+        this.typeCatego = typeCatego;
+        this.soldeuseravant = soldeuseravant;
+        this.depensechart = depensechart;
+        this.origintype = origintype;
+        this.icon = icon;
+        this.color = color;
+    }
+
+    public HistoryLine(
+        @NotNull String categoryName,
+        @NotNull Float montant,
+        String userLogin,
+        String note,
+        Float revenuschart,
+        String typeCatego,
+        Float soldeuseravant,
+        String origintype,
+        String icon,
+        String color
+    ) {
+        this.categoryName = categoryName;
+
+        this.montant = montant;
+        this.userLogin = userLogin;
+        this.note = note;
+        this.revenuschart = revenuschart;
+        this.typeCatego = typeCatego;
+        this.soldeuseravant = soldeuseravant;
+        this.origintype = origintype;
+        this.icon = icon;
+        this.color = color;
+    }
+
+    public HistoryLine(
+        @NotNull String categoryName,
+        @NotNull Float montant,
+        String userLogin,
+        String typeCatego,
+        Float soldeuseravant,
+        Float depensechart,
+        String origintype,
+        String icon,
+        String color
+    ) {
+        this.categoryName = categoryName;
+        this.montant = montant;
+        this.userLogin = userLogin;
+        this.typeCatego = typeCatego;
+        this.soldeuseravant = soldeuseravant;
+        this.depensechart = depensechart;
+        this.origintype = origintype;
+        this.icon = icon;
+        this.color = color;
+    }
+
+    public HistoryLine(
+        @NotNull String categoryName,
+        @NotNull Float montant,
+        String userLogin,
+        Float revenuschart,
+        String typeCatego,
+        Float soldeuseravant,
+        String origintype,
+        String icon,
+        String color
+    ) {
+        this.categoryName = categoryName;
+        this.montant = montant;
+        this.userLogin = userLogin;
+        this.revenuschart = revenuschart;
+        this.typeCatego = typeCatego;
+        this.soldeuseravant = soldeuseravant;
+        this.origintype = origintype;
+        this.icon = icon;
+        this.color = color;
+    }
+
+    public HistoryLine(
+        @NotNull String categoryName,
+        @NotNull LocalDate dateModif,
+        @NotNull Float montant,
+        String userLogin,
+        String typeCatego,
+        Float soldeuseravant,
+        String origintype,
+        String icon,
+        String color
+    ) {
+        this.categoryName = categoryName;
+        this.dateModif = dateModif;
+        this.montant = montant;
+        this.userLogin = userLogin;
+        this.typeCatego = typeCatego;
+        this.soldeuseravant = soldeuseravant;
+        this.origintype = origintype;
+        this.icon = icon;
+        this.color = color;
+    }
+
+    public HistoryLine(
+        @NotNull String categoryName,
+        @NotNull LocalDate dateModif,
+        @NotNull Float montant,
+        String userLogin,
+        String typeCatego,
+        Float soldeuseravant,
+        String note,
+        String origintype,
+        String icon,
+        String color
+    ) {
+        this.categoryName = categoryName;
+        this.dateModif = dateModif;
+        this.montant = montant;
+        this.userLogin = userLogin;
+        this.typeCatego = typeCatego;
+        this.soldeuseravant = soldeuseravant;
+        this.note = note;
+        this.origintype = origintype;
+        this.icon = icon;
+        this.color = color;
+    }
+
+    public HistoryLine(
+        @NotNull String categoryName,
+        @NotNull LocalDate dateModif,
+        @NotNull Float montant,
+        String userLogin,
+        String note,
+        String typeCatego,
+        Float soldeuseravant,
+        String origintype,
+        String icon,
+        String color
+    ) {
+        this.categoryName = categoryName;
+        this.dateModif = dateModif;
+        this.montant = montant;
+        this.userLogin = userLogin;
+        this.note = note;
+        this.typeCatego = typeCatego;
+        this.soldeuseravant = soldeuseravant;
+        this.origintype = origintype;
+        this.icon = icon;
+        this.color = color;
     }
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
@@ -123,16 +346,40 @@ public class HistoryLine implements Serializable {
         this.categoryName = categoryName;
     }
 
-    public ZonedDateTime getDateModif() {
+    public LocalDate getDateModif() {
         return this.dateModif;
     }
 
-    public HistoryLine dateModif(ZonedDateTime dateModif) {
+    public HistoryLine dateModif(LocalDate dateModif) {
         this.dateModif = dateModif;
         return this;
     }
 
-    public void setDateModif(ZonedDateTime dateModif) {
+    public String getOrigintype() {
+        return origintype;
+    }
+
+    public void setOrigintype(String origintype) {
+        this.origintype = origintype;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        icon = icon;
+    }
+
+    public void setDateModif(LocalDate dateModif) {
         this.dateModif = dateModif;
     }
 
@@ -207,6 +454,22 @@ public class HistoryLine implements Serializable {
             return false;
         }
         return id != null && id.equals(((HistoryLine) o).id);
+    }
+
+    public Float getDepensechart() {
+        return depensechart;
+    }
+
+    public void setDepensechart(Float depensechart) {
+        this.depensechart = depensechart;
+    }
+
+    public Float getRevenuschart() {
+        return revenuschart;
+    }
+
+    public void setRevenuschart(Float revenuschart) {
+        revenuschart = revenuschart;
     }
 
     @Override

@@ -4,12 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static stochi.app.web.rest.TestUtil.sameInstant;
 
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,11 +27,11 @@ import stochi.app.repository.PeriodeRepository;
 @WithMockUser
 class PeriodeResourceIT {
 
-    private static final ZonedDateTime DEFAULT_DATE_DEB = ZonedDateTime.ofInstant(Instant.ofEpochMilli(0L), ZoneOffset.UTC);
-    private static final ZonedDateTime UPDATED_DATE_DEB = ZonedDateTime.now(ZoneId.systemDefault()).withNano(0);
+    private static final LocalDate DEFAULT_DATE_DEB = LocalDate.ofInstant(Instant.ofEpochMilli(0L), ZoneOffset.UTC);
+    private static final LocalDate UPDATED_DATE_DEB = LocalDate.now(ZoneId.systemDefault());
 
-    private static final ZonedDateTime DEFAULT_DATE_FIN = ZonedDateTime.ofInstant(Instant.ofEpochMilli(0L), ZoneOffset.UTC);
-    private static final ZonedDateTime UPDATED_DATE_FIN = ZonedDateTime.now(ZoneId.systemDefault()).withNano(0);
+    private static final LocalDate DEFAULT_DATE_FIN = LocalDate.ofInstant(Instant.ofEpochMilli(0L), ZoneOffset.UTC);
+    private static final LocalDate UPDATED_DATE_FIN = LocalDate.now(ZoneId.systemDefault());
 
     private static final String DEFAULT_FREQUANCY = "AAAAAAAAAA";
     private static final String UPDATED_FREQUANCY = "BBBBBBBBBB";
@@ -148,8 +144,6 @@ class PeriodeResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(periode.getId())))
-            .andExpect(jsonPath("$.[*].dateDeb").value(hasItem(sameInstant(DEFAULT_DATE_DEB))))
-            .andExpect(jsonPath("$.[*].dateFin").value(hasItem(sameInstant(DEFAULT_DATE_FIN))))
             .andExpect(jsonPath("$.[*].frequancy").value(hasItem(DEFAULT_FREQUANCY)))
             .andExpect(jsonPath("$.[*].fixedMontant").value(hasItem(DEFAULT_FIXED_MONTANT.doubleValue())))
             .andExpect(jsonPath("$.[*].numberleft").value(hasItem(DEFAULT_NUMBERLEFT.intValue())))
@@ -167,8 +161,6 @@ class PeriodeResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(periode.getId()))
-            .andExpect(jsonPath("$.dateDeb").value(sameInstant(DEFAULT_DATE_DEB)))
-            .andExpect(jsonPath("$.dateFin").value(sameInstant(DEFAULT_DATE_FIN)))
             .andExpect(jsonPath("$.frequancy").value(DEFAULT_FREQUANCY))
             .andExpect(jsonPath("$.fixedMontant").value(DEFAULT_FIXED_MONTANT.doubleValue()))
             .andExpect(jsonPath("$.numberleft").value(DEFAULT_NUMBERLEFT.intValue()))

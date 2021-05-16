@@ -37,8 +37,8 @@ spring:
   mail:
     host: localhost
     port: 25
-    username:
-    password:
+    username: gnya.gnya10@gmail.com
+    password: lovedk27404725
   messages:
     cache-duration: PT1S # 1 second, see the ISO 8601 standard
   thymeleaf:

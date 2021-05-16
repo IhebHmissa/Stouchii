@@ -4,6 +4,7 @@ import static stochi.app.security.SecurityUtils.getCurrentUserLoginn;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -196,7 +197,7 @@ public class NotificationResource {
             List<Notification> notifs = notificationRepository.findByUserLogin(user.getLogin());
 
             for (Notification notif : notifs) {
-                if (notif.getTime().isBefore(ZonedDateTime.now().minusDays(7))) {
+                if (notif.getTime().isBefore(LocalDate.now().minusDays(7))) {
                     notificationService.delete(notif.getId());
                 }
             }

@@ -14,4 +14,6 @@ import stochi.app.domain.HistoryLine;
 public interface HistoryLineRepository extends MongoRepository<HistoryLine, String> {
     List<HistoryLine> findByUserLoginAndCategoryName(String login, String name);
     List<HistoryLine> findByUserLogin(String user);
+    List<HistoryLine> findByUserLoginAndTypeCategoAndOrigintype(String login, String type, String origin);
+    List<HistoryLine> findByUserLoginAndTypeCatego(String login, String type);
 }

@@ -152,7 +152,8 @@ public class UserService {
         authorityRepository.findById(AuthoritiesConstants.USER).ifPresent(authorities::add);
         newUser.setAuthorities(authorities);
         newUser.setSoldeUser(userDTO.getSoldeUser());
-
+        newUser.setSoldeuserdepense(userDTO.getSoldeuserdepense());
+        newUser.setSolduserrevenus(userDTO.getSolduserrevenus());
         Category cat1 = new Category("Depense", newUser.getLogin(), "Catego", 0f, "Food & Drinks", "red", "cutlery", "FoodCategorie");
         categoryService.save(cat1);
         Category cat2 = new Category("Depense", newUser.getLogin(), "Catego", 0f, "Housing", "#1DAED9", "home", "HousingCategorie");

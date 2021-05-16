@@ -76,6 +76,10 @@ public class User extends AbstractAuditingEntity implements Serializable {
 
     private Float soldeUser;
 
+    private Float soldeuserdepense;
+
+    private Float solduserrevenus;
+
     @JsonIgnore
     private Set<Authority> authorities = new HashSet<>();
 
@@ -190,6 +194,22 @@ public class User extends AbstractAuditingEntity implements Serializable {
 
     public void setSoldeUser(Float soldeUser) {
         this.soldeUser = soldeUser;
+    }
+
+    public Float getSoldeuserdepense() {
+        return soldeuserdepense;
+    }
+
+    public void setSoldeuserdepense(Float soldeuserdepense) {
+        this.soldeuserdepense = soldeuserdepense;
+    }
+
+    public Float getSolduserrevenus() {
+        return solduserrevenus;
+    }
+
+    public void setSolduserrevenus(Float solduserrevenus) {
+        this.solduserrevenus = solduserrevenus;
     }
 
     @Override

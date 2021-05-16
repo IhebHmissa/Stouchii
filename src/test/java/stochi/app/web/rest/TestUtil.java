@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
 import org.hamcrest.Description;
@@ -94,9 +95,6 @@ public final class TestUtil {
      *
      * @param date the reference datetime against which the examined string is checked.
      */
-    public static ZonedDateTimeMatcher sameInstant(ZonedDateTime date) {
-        return new ZonedDateTimeMatcher(date);
-    }
 
     /**
      * A matcher that tests that the examined number represents the same value - it can be Long, Double, etc - as the reference BigDecimal.

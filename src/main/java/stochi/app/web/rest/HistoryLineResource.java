@@ -10,13 +10,15 @@ import java.util.Objects;
 import java.util.Optional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -160,9 +162,12 @@ public class HistoryLineResource {
         return historyLineRepository.findByUserLogin(getCurrentUserLoginn());
     }
 
-    @GetMapping("/history-lines/{nomcatego}")
-    public List<HistoryLine> getSpecificCat(@PathVariable(value = "nomcatego") String nom) {
-        return historyLineRepository.findByUserLoginAndCategoryName(getCurrentUserLoginn(), nom);
+    @GetMapping("/history/specifichisto/{nomcatego}")
+    public List<HistoryLine> getSpecifichistoca(@PathVariable(value = "nomcatego") String nomcatego) {
+        if (historyLineRepository.findByUserLoginAndCategoryName(getCurrentUserLoginn(), nomcatego) == null) {
+            throw new BadRequestAlertException("There is no categ with that name", ENTITY_NAME, "Catego not found");
+        }
+        return historyLineRepository.findByUserLoginAndCategoryName(getCurrentUserLoginn(), nomcatego);
     }
 
     /**
@@ -199,5 +204,87 @@ public class HistoryLineResource {
             listaa.add(histoo.getSoldeuseravant());
         }
         return listaa;
+    }
+
+    @GetMapping("/history-lines/multiseries")
+    public String evolutionSol() {
+        JSONArray dataD = new JSONArray();
+        List<HistoryLine> histo = historyLineRepository.findByUserLoginAndTypeCategoAndOrigintype(
+            getCurrentUserLoginn(),
+            "Depense",
+            "Catego"
+        );
+        try {
+            for (HistoryLine hist : histo) {
+                JSONObject jo = new JSONObject();
+                jo.put("x", hist.getDateModif());
+                jo.put("y", hist.getDepensechart());
+                dataD.put(jo);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        JSONArray dataR = new JSONArray();
+        List<HistoryLine> histo2 = historyLineRepository.findByUserLoginAndTypeCatego(getCurrentUserLoginn(), "Revenus");
+        try {
+            for (HistoryLine hist2 : histo2) {
+                JSONObject jo = new JSONObject();
+                jo.put("x", hist2.getDateModif());
+                jo.put("y", hist2.getRevenuschart());
+                dataR.put(jo);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        JSONArray JA = new JSONArray();
+        try {
+            JSONObject jo = new JSONObject();
+            JSONObject jo2 = new JSONObject();
+            jo.put("seriesName", "Depense");
+            jo.put("data", dataD);
+            jo.put("color", "#297AB1");
+            JA.put(jo);
+            jo2.put("seriesName", "Revenus");
+            jo2.put("data", dataR);
+            jo2.put("color", "yellow");
+            JA.put(jo2);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return JA.toString();
+    }
+
+    @GetMapping("/history-lines/revenusevolution")
+    public String evolutionrevenus() {
+        JSONArray dataR = new JSONArray();
+        List<HistoryLine> histo2 = historyLineRepository.findByUserLoginAndTypeCatego(getCurrentUserLoginn(), "Revenus");
+        try {
+            for (HistoryLine hist2 : histo2) {
+                JSONObject jo = new JSONObject();
+                jo.put("x", hist2.getDateModif());
+                jo.put("y", hist2.getRevenuschart());
+                dataR.put(jo);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return dataR.toString();
+    }
+
+    @GetMapping("/history-lines/depenseevolution")
+    public String evolutiondepenses() {
+        JSONArray dataR = new JSONArray();
+        List<HistoryLine> histo2 = historyLineRepository.findByUserLoginAndTypeCatego(getCurrentUserLoginn(), "Depense");
+        try {
+            for (HistoryLine hist2 : histo2) {
+                JSONObject jo = new JSONObject();
+                jo.put("x", hist2.getDateModif());
+                jo.put("y", hist2.getDepensechart());
+                dataR.put(jo);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return dataR.toString();
     }
 }

@@ -1,6 +1,7 @@
 package stochi.app.domain;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -27,14 +28,14 @@ public class Notification implements Serializable {
     private String categoryName;
 
     @Field("time")
-    private ZonedDateTime time;
+    private LocalDate time;
 
     @Field("type")
     private String type;
 
     public Notification() {}
 
-    public Notification(Float amount, String userLogin, String categoryName, ZonedDateTime time, String type) {
+    public Notification(Float amount, String userLogin, String categoryName, LocalDate time, String type) {
         this.amount = amount;
         this.userLogin = userLogin;
         this.categoryName = categoryName;
@@ -95,16 +96,16 @@ public class Notification implements Serializable {
         this.categoryName = categoryName;
     }
 
-    public ZonedDateTime getTime() {
+    public LocalDate getTime() {
         return this.time;
     }
 
-    public Notification time(ZonedDateTime time) {
+    public Notification time(LocalDate time) {
         this.time = time;
         return this;
     }
 
-    public void setTime(ZonedDateTime time) {
+    public void setTime(LocalDate time) {
         this.time = time;
     }
 

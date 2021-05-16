@@ -1,6 +1,7 @@
 package stochi.app.domain;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import javax.validation.constraints.*;
 import org.springframework.data.annotation.Id;
@@ -51,7 +52,7 @@ public class Category implements Serializable {
 
     private String dest;
 
-    private ZonedDateTime modifDate;
+    private LocalDate modifDate;
     private String note;
 
     public Category() {}
@@ -83,7 +84,7 @@ public class Category implements Serializable {
         this.average = average;
     }
 
-    public Category(String type, Float montant, String nameCatego, String note, ZonedDateTime date) {
+    public Category(String type, Float montant, String nameCatego, String note, LocalDate date) {
         this.type = type;
         this.nameCatego = nameCatego;
         this.montant = montant;
@@ -284,11 +285,11 @@ public class Category implements Serializable {
         this.dest = dest;
     }
 
-    public ZonedDateTime getModifDate() {
+    public LocalDate getModifDate() {
         return modifDate;
     }
 
-    public void setModifDate(ZonedDateTime modifDate) {
+    public void setModifDate(LocalDate modifDate) {
         this.modifDate = modifDate;
     }
 
