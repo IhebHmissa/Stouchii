@@ -197,7 +197,9 @@ public class CategoryResource {
             if (value.getSoldeuserdepense() == null) value.setSoldeuserdepense(0F);
             if (value.getSolduserrevenus() == null) value.setSolduserrevenus(0F);
             userRepository.save(value);
-            if ((category.getModifDate() != null) & (category.getNote() != null)) {
+            System.out.println("Here!!:/");
+            System.out.println((category.getModifDate() != null));
+            if ((category.getModifDate() != null) || (category.getNote() != null)) {
                 if (catNEW.getType().equals("Depense")) {
                     value.setSoldeuserdepense(value.getSoldeuserdepense() + montan);
                     userRepository.save(value);
@@ -235,7 +237,7 @@ public class CategoryResource {
                     historyLineRepository.save(hist);
                     System.out.println(hist);
                 }
-            } else if ((category.getModifDate() == null) & (category.getNote() != null)) {
+            } else if ((category.getModifDate() == null) || (category.getNote() != null)) {
                 if (catNEW.getType().equals("Depense")) {
                     value.setSoldeuserdepense(value.getSoldeuserdepense() + montan);
                     userRepository.save(value);
@@ -271,7 +273,7 @@ public class CategoryResource {
                     historyLineRepository.save(hist);
                     System.out.println(hist);
                 }
-            } else if ((category.getModifDate() != null) & (category.getNote() == null)) {
+            } else if ((category.getModifDate() != null) || (category.getNote() == null)) {
                 if (catNEW.getType().equals("Depense")) {
                     value.setSoldeuserdepense(value.getSoldeuserdepense() + montan);
                     userRepository.save(value);
@@ -343,15 +345,75 @@ public class CategoryResource {
                 }
             }
 
-            // Notificiation part !
+            // Notificiation part
+            // Notification for the main category
             if (categoryRepository.findOneByUserLoginAndNameCatego(getCurrentUserLoginn(), "Salary").getPeriodictyy() != null) {
+                Category catNotif = new Category();
+                if (catNEW.getOriginType().equals("Catego")) catNotif = catNEW; else catNotif =
+                    categoryRepository.findOneByUserLoginAndNameCatego(getCurrentUserLoginn(), catNEW.getOriginType());
                 if (
-                    catNEW.getAverage() != null &
+                    catNotif.getAverage() != null &
                     categoryRepository
                         .findOneByUserLoginAndNameCatego(getCurrentUserLoginn(), "Salary")
                         .getPeriodictyy()
                         .getFixedMontant() !=
                     null
+                ) {
+                    Float salary = categoryRepository
+                        .findOneByUserLoginAndNameCatego(getCurrentUserLoginn(), "Salary")
+                        .getPeriodictyy()
+                        .getFixedMontant();
+                    if (catNotif.getMontant() != null) {
+                        if (
+                            (catNotif.getMontant() > 0.9 * salary * catNotif.getAverage()) &
+                            (catNotif.getMontant() < 0.95 * salary * catNotif.getAverage())
+                        ) {
+                            Notification notif = new Notification(
+                                catNotif.getMontant(),
+                                value.getLogin(),
+                                catNotif.getNameCatego(),
+                                LocalDate.now(),
+                                "90% exceeded"
+                            );
+                            notificationRepository.save(notif);
+                            System.out.println(notif);
+                        } else if (
+                            (catNotif.getMontant() > 0.95 * salary * catNotif.getAverage()) &
+                            (catNotif.getMontant() < salary * catNotif.getAverage())
+                        ) {
+                            Notification notif = new Notification(
+                                catNotif.getMontant(),
+                                value.getLogin(),
+                                catNotif.getNameCatego(),
+                                LocalDate.now(),
+                                "95% exceeded"
+                            );
+                            notificationRepository.save(notif);
+                            System.out.println(notif);
+                        } else if (catNotif.getMontant() > salary * catNotif.getAverage()) {
+                            Notification notif = new Notification(
+                                catNotif.getMontant(),
+                                value.getLogin(),
+                                catNotif.getNameCatego(),
+                                LocalDate.now(),
+                                "100% exceeded"
+                            );
+                            notificationRepository.save(notif);
+                            System.out.println(notif);
+                        }
+                    }
+                }
+                // Notification for the sub categories that the user specify
+                if (
+                    (
+                        catNEW.getAverage() != null &
+                        categoryRepository
+                            .findOneByUserLoginAndNameCatego(getCurrentUserLoginn(), "Salary")
+                            .getPeriodictyy()
+                            .getFixedMontant() !=
+                        null
+                    ) &
+                    (!catNEW.getOriginType().equals("Catego"))
                 ) {
                     Float salary = categoryRepository
                         .findOneByUserLoginAndNameCatego(getCurrentUserLoginn(), "Salary")
@@ -454,6 +516,14 @@ public class CategoryResource {
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 
+    @GetMapping("/categories/namecatego")
+    public List<String> getAllCategoriesnames() {
+        List<Category> lista = categoryRepository.findByUserLogin(getCurrentUserLoginn());
+        List<String> names = new ArrayList<String>();
+        for (Category cat : lista) names.add(cat.getNameCatego());
+        return names;
+    }
+
     @GetMapping("/categories/depenses")
     public List<Category> getDepenseCategories() {
         log.debug("REST request to get a page of Depense Categories");
@@ -505,8 +575,13 @@ public class CategoryResource {
      */
     @DeleteMapping("/categories/{nomcatego}")
     public ResponseEntity<Void> deleteCategory(@PathVariable String nomcatego) {
-        String id = categoryRepository.findOneByUserLoginAndNameCatego(getCurrentUserLoginn(), nomcatego).getId();
+        Category cate = categoryRepository.findOneByUserLoginAndNameCatego(getCurrentUserLoginn(), nomcatego);
+        String id = cate.getId();
         log.debug("REST request to delete Category : {}", nomcatego);
+        if (cate.getOriginType().equals("Catego")) {
+            List<Category> listaa = categoryRepository.findByUserLoginAndOriginType(getCurrentUserLoginn(), nomcatego);
+            for (Category catego : listaa) categoryService.delete(catego.getId());
+        }
         categoryService.delete(id);
         return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id)).build();
     }
@@ -616,7 +691,6 @@ public class CategoryResource {
         List<Category> listecategoDepense = categoryRepository.findByUserLoginAndOriginType(getCurrentUserLoginn(), "Catego");
         try {
             for (Category catego : listecategoDepense) {
-                System.out.println("here");
                 JSONObject jo = new JSONObject();
                 jo.put("value", catego.getMontant());
                 jo.put("label", catego.getNameCatego());
@@ -624,7 +698,6 @@ public class CategoryResource {
                 ja.put(jo);
             }
         } catch (JSONException e) {
-            System.out.println("here2");
             e.printStackTrace();
         }
 
@@ -665,6 +738,8 @@ public class CategoryResource {
     /*
     Cette fonction se répéte chaque jour a 7h00
     */
+
+    //@Scheduled(fixedDelay = 30000)
     @Scheduled(cron = "0 0 7 * * *", zone = "Africa/Tunis")
     public void Scheduled_task() {
         System.out.println("This a repeated task");
@@ -673,7 +748,7 @@ public class CategoryResource {
         for (User user : listaa) {
             for (Category catego : FindAllCategories(user.getLogin())) {
                 if (catego.getPeriodictyy() != null) {
-                    System.out.println(catego.getNameCatego());
+                    System.out.println(catego.getNameCatego() + catego.getUserLogin());
                     boolean stayin = true;
                     if (catego.getPeriodictyy().getDateFin() != null) {
                         System.out.println("HEY " + catego.getPeriodictyy().getDateFin().isBefore(LocalDate.now()));
@@ -870,6 +945,182 @@ public class CategoryResource {
                             }
                         }
                     }
+                }
+            }
+        }
+    }
+
+    /*
+    Cette fonction se répéte chaque mois Le 01 a 7h00
+     */
+    @Scheduled(cron = "0 0 7 1 * *", zone = "Africa/Tunis")
+    public void scheduledtask2() {
+        List<Category> Lista = categoryRepository.findByUserLogin(getCurrentUserLoginn());
+        for (Category cat : Lista) {
+            cat.setMontant(0F);
+        }
+    }
+
+    /*
+     This scheduled task : recalculate the avreage , Minmontant and Maxmontant of the user catégories After 3 MONTHS of the application use
+     */
+    private Float avregeInThreeMo(String login, String name, Float salary) {
+        List<HistoryLine> listH = historyLineRepository.findByUserLoginAndCategoryName(login, name);
+        Float result = 0F;
+        if (!listH.isEmpty()) {
+            int count = 0;
+            for (HistoryLine hist : listH) {
+                if (hist.getDateModif().isAfter(LocalDate.now().minusMonths(3))) {
+                    result = hist.getMontant();
+                    count = count + 1;
+                }
+            }
+            return result / (count * salary);
+        }
+        return categoryRepository.findOneByUserLoginAndNameCatego(login, name).getAverage();
+    }
+
+    private Float minMongeInThreeMo(String login, String name, Float salary) {
+        Float result;
+        List<HistoryLine> listH = historyLineRepository.findByUserLoginAndCategoryName(login, name);
+        if (categoryRepository.findOneByUserLoginAndNameCatego(login, name).getMinMontant() == null) result = salary; else result =
+            categoryRepository.findOneByUserLoginAndNameCatego(login, name).getMinMontant();
+        if (!listH.isEmpty()) {
+            for (HistoryLine hist : listH) {
+                if (hist.getDateModif().isAfter(LocalDate.now().minusMonths(3))) {
+                    if ((result * salary) > hist.getMontant()) result = hist.getMontant() / salary;
+                }
+            }
+        }
+        return result;
+    }
+
+    private Float maxMongeInThreeMo(String login, String name, Float salary) {
+        List<HistoryLine> listH = historyLineRepository.findByUserLoginAndCategoryName(login, name);
+        Float result;
+        if (categoryRepository.findOneByUserLoginAndNameCatego(login, name).getMaxMontant() == null) result = 0F; else result =
+            categoryRepository.findOneByUserLoginAndNameCatego(login, name).getMaxMontant();
+        if (!listH.isEmpty()) {
+            for (HistoryLine hist : listH) {
+                if (hist.getDateModif().isAfter(LocalDate.now().minusMonths(3))) {
+                    if ((result * salary) < hist.getMontant()) result = hist.getMontant() / salary;
+                }
+            }
+        }
+        return result;
+    }
+
+    //@Scheduled(fixedDelay = 30000)
+    @Scheduled(cron = "0 0 7 * * *", zone = "Africa/Tunis")
+    public void scheduledtask3() {
+        List<User> listaa = userRepository.findAll();
+        for (User user : listaa) {
+            System.out.println(user.getLogin());
+            if (user.getDateSalary() != null & user.getSalary() != null) {
+                if (LocalDate.now().isBefore(user.getDateSalary().plusMonths(3))) {
+                    System.out.println("3 Months varibales update ");
+                    List<Category> listaa2 = categoryRepository.findByUserLoginAndOriginType(user.getLogin(), "Catego");
+                    for (Category cat : listaa2) {
+                        if ((cat.getAverage() != null)) {
+                            if (
+                                (
+                                    cat
+                                        .getAverage()
+                                        .equals(
+                                            categoryRepository
+                                                .findOneByUserLoginAndNameCatego("fixeduser", cat.getNameCatego())
+                                                .getAverage()
+                                        )
+                                )
+                            ) cat.setAverage(
+                                avregeInThreeMo(
+                                    user.getLogin(),
+                                    cat.getNameCatego(),
+                                    categoryRepository
+                                        .findOneByUserLoginAndNameCatego(user.getLogin(), "Salary")
+                                        .getPeriodictyy()
+                                        .getFixedMontant()
+                                )
+                            );
+                        } else cat.setAverage(
+                            avregeInThreeMo(
+                                user.getLogin(),
+                                cat.getNameCatego(),
+                                categoryRepository
+                                    .findOneByUserLoginAndNameCatego(user.getLogin(), "Salary")
+                                    .getPeriodictyy()
+                                    .getFixedMontant()
+                            )
+                        );
+
+                        if ((cat.getMinMontant() != null)) {
+                            if (
+                                (
+                                    cat
+                                        .getMinMontant()
+                                        .equals(
+                                            categoryRepository
+                                                .findOneByUserLoginAndNameCatego("fixeduser", cat.getNameCatego())
+                                                .getMinMontant()
+                                        )
+                                )
+                            ) cat.setMinMontant(
+                                minMongeInThreeMo(
+                                    user.getLogin(),
+                                    cat.getNameCatego(),
+                                    categoryRepository
+                                        .findOneByUserLoginAndNameCatego(user.getLogin(), "Salary")
+                                        .getPeriodictyy()
+                                        .getFixedMontant()
+                                )
+                            );
+                        } else cat.setMinMontant(
+                            minMongeInThreeMo(
+                                user.getLogin(),
+                                cat.getNameCatego(),
+                                categoryRepository
+                                    .findOneByUserLoginAndNameCatego(user.getLogin(), "Salary")
+                                    .getPeriodictyy()
+                                    .getFixedMontant()
+                            )
+                        );
+
+                        if ((cat.getMaxMontant() != null)) {
+                            if (
+                                (
+                                    cat
+                                        .getMaxMontant()
+                                        .equals(
+                                            categoryRepository
+                                                .findOneByUserLoginAndNameCatego("fixeduser", cat.getNameCatego())
+                                                .getMaxMontant()
+                                        )
+                                )
+                            ) cat.setMaxMontant(
+                                maxMongeInThreeMo(
+                                    user.getLogin(),
+                                    cat.getNameCatego(),
+                                    categoryRepository
+                                        .findOneByUserLoginAndNameCatego(user.getLogin(), "Salary")
+                                        .getPeriodictyy()
+                                        .getFixedMontant()
+                                )
+                            );
+                        } else cat.setMaxMontant(
+                            maxMongeInThreeMo(
+                                user.getLogin(),
+                                cat.getNameCatego(),
+                                categoryRepository
+                                    .findOneByUserLoginAndNameCatego(user.getLogin(), "Salary")
+                                    .getPeriodictyy()
+                                    .getFixedMontant()
+                            )
+                        );
+
+                        categoryRepository.save(cat);
+                    }
+                    user.setDateSalary(LocalDate.now());
+                    userRepository.save(user);
                 }
             }
         }

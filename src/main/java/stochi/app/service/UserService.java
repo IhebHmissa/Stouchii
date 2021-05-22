@@ -1,6 +1,8 @@
 package stochi.app.service;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 import stochi.app.config.Constants;
 import stochi.app.domain.Authority;
 import stochi.app.domain.Category;
+import stochi.app.domain.Periode;
 import stochi.app.domain.User;
 import stochi.app.repository.AuthorityRepository;
 import stochi.app.repository.UserRepository;
@@ -154,6 +157,8 @@ public class UserService {
         newUser.setSoldeUser(userDTO.getSoldeUser());
         newUser.setSoldeuserdepense(userDTO.getSoldeuserdepense());
         newUser.setSolduserrevenus(userDTO.getSolduserrevenus());
+        newUser.setSalary(userDTO.getSalary());
+        newUser.setDateSalary(LocalDate.now());
         Category cat1 = new Category("Depense", newUser.getLogin(), "Catego", 0f, "Food & Drinks", "red", "cutlery", "FoodCategorie");
         categoryService.save(cat1);
         Category cat2 = new Category("Depense", newUser.getLogin(), "Catego", 0f, "Housing", "#1DAED9", "home", "HousingCategorie");
@@ -255,7 +260,11 @@ public class UserService {
         categoryService.save(cat46);
         Category cat47 = new Category("Revenus", newUser.getLogin(), "Catego", 0f, "Income", "#F7EE27", "dollar", "IncomeCategorie");
         categoryService.save(cat47);
-        Category cat48 = new Category("Revenus", newUser.getLogin(), "Income", 0f, "Salary", "#F7EE27", "IncomeCategorie");
+        System.out.println(LocalDate.now().getYear());
+        System.out.println(LocalDate.now().getMonth());
+        LocalDate d = LocalDate.of(LocalDate.now().getYear(), LocalDate.now().getMonthValue(), 1);
+        Periode psalary = new Periode(d, "mois", userDTO.getSalary());
+        Category cat48 = new Category("Revenus", newUser.getLogin(), "Income", 0f, "Salary", "#F7EE27", "IncomeCategorie", psalary);
         categoryService.save(cat48);
         Category cat49 = new Category("Revenus", newUser.getLogin(), "Income", 0f, "Sale & Rents", "#F7EE27", "IncomeCategorie");
         categoryService.save(cat49);

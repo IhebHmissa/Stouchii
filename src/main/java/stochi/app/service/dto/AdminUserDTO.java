@@ -1,6 +1,7 @@
 package stochi.app.service.dto;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.validation.constraints.*;
@@ -52,6 +53,8 @@ public class AdminUserDTO {
     private Float soldeuserdepense;
 
     private Float solduserrevenus;
+    private Float salary;
+    private LocalDate dateSalary;
 
     public AdminUserDTO() {
         // Empty constructor needed for Jackson.
@@ -71,6 +74,9 @@ public class AdminUserDTO {
         this.lastModifiedBy = user.getLastModifiedBy();
         this.lastModifiedDate = user.getLastModifiedDate();
         this.authorities = user.getAuthorities().stream().map(Authority::getName).collect(Collectors.toSet());
+        this.soldeUser = user.getSoldeUser();
+        this.salary = user.getSalary();
+        this.dateSalary = user.getDateSalary();
     }
 
     public String getId() {
@@ -199,6 +205,22 @@ public class AdminUserDTO {
 
     public void setSoldeUser(Float soldeUser) {
         this.soldeUser = soldeUser;
+    }
+
+    public LocalDate getDateSalary() {
+        return dateSalary;
+    }
+
+    public void setDateSalary(LocalDate dateSalary) {
+        this.dateSalary = dateSalary;
+    }
+
+    public Float getSalary() {
+        return salary;
+    }
+
+    public void setSalary(Float salary) {
+        this.salary = salary;
     }
 
     // prettier-ignore

@@ -3,6 +3,7 @@ package stochi.app.domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
@@ -79,6 +80,10 @@ public class User extends AbstractAuditingEntity implements Serializable {
     private Float soldeuserdepense;
 
     private Float solduserrevenus;
+
+    private Float salary;
+
+    private LocalDate dateSalary;
 
     @JsonIgnore
     private Set<Authority> authorities = new HashSet<>();
@@ -210,6 +215,22 @@ public class User extends AbstractAuditingEntity implements Serializable {
 
     public void setSolduserrevenus(Float solduserrevenus) {
         this.solduserrevenus = solduserrevenus;
+    }
+
+    public LocalDate getDateSalary() {
+        return dateSalary;
+    }
+
+    public void setDateSalary(LocalDate dateSalary) {
+        this.dateSalary = dateSalary;
+    }
+
+    public Float getSalary() {
+        return salary;
+    }
+
+    public void setSalary(Float salary) {
+        this.salary = salary;
     }
 
     @Override

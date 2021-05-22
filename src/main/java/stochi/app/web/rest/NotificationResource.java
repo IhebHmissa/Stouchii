@@ -190,14 +190,14 @@ public class NotificationResource {
 
     @Scheduled(cron = "0 0 7 * * *", zone = "Africa/Tunis")
     public void Scheduled_task2() {
-        System.out.println("This is a Scheduled TAsk to delete Notifications which they are older then 7 days");
+        System.out.println("This is a Scheduled TAsk to delete Notifications which they are older then 15 days");
 
         List<User> listaa = userRepository.findAll();
         for (User user : listaa) {
             List<Notification> notifs = notificationRepository.findByUserLogin(user.getLogin());
 
             for (Notification notif : notifs) {
-                if (notif.getTime().isBefore(LocalDate.now().minusDays(7))) {
+                if (notif.getTime().isBefore(LocalDate.now().minusDays(15))) {
                     notificationService.delete(notif.getId());
                 }
             }

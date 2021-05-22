@@ -4,6 +4,7 @@ import static stochi.app.security.SecurityUtils.getCurrentUserLoginn;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -215,6 +216,11 @@ public class HistoryLineResource {
             "Catego"
         );
         try {
+            JSONObject jo22 = new JSONObject();
+            jo22.put("x", LocalDate.now());
+            jo22.put("y", 0F);
+            dataD.put(jo22);
+
             for (HistoryLine hist : histo) {
                 JSONObject jo = new JSONObject();
                 jo.put("x", hist.getDateModif());
@@ -227,6 +233,10 @@ public class HistoryLineResource {
         JSONArray dataR = new JSONArray();
         List<HistoryLine> histo2 = historyLineRepository.findByUserLoginAndTypeCatego(getCurrentUserLoginn(), "Revenus");
         try {
+            JSONObject jo22 = new JSONObject();
+            jo22.put("x", LocalDate.now());
+            jo22.put("y", 0F);
+            dataR.put(jo22);
             for (HistoryLine hist2 : histo2) {
                 JSONObject jo = new JSONObject();
                 jo.put("x", hist2.getDateModif());

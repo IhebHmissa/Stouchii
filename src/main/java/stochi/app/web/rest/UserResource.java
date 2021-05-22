@@ -8,6 +8,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,7 +20,13 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import stochi.app.config.Constants;
+import stochi.app.domain.Category;
+import stochi.app.domain.HistoryLine;
+import stochi.app.domain.Notification;
 import stochi.app.domain.User;
+import stochi.app.repository.CategoryRepository;
+import stochi.app.repository.HistoryLineRepository;
+import stochi.app.repository.NotificationRepository;
 import stochi.app.repository.UserRepository;
 import stochi.app.security.AuthoritiesConstants;
 import stochi.app.service.MailService;
@@ -75,10 +82,29 @@ public class UserResource {
 
     private final MailService mailService;
 
-    public UserResource(UserService userService, UserRepository userRepository, MailService mailService) {
+    @Autowired
+    private final CategoryRepository categoryRepository;
+
+    @Autowired
+    private final HistoryLineRepository historyLineRepository;
+
+    @Autowired
+    private final NotificationRepository notificationRepository;
+
+    public UserResource(
+        UserService userService,
+        UserRepository userRepository,
+        MailService mailService,
+        CategoryRepository categoryRepository,
+        HistoryLineRepository historyLineRepository,
+        NotificationRepository notificationRepository
+    ) {
         this.userService = userService;
         this.userRepository = userRepository;
         this.mailService = mailService;
+        this.categoryRepository = categoryRepository;
+        this.historyLineRepository = historyLineRepository;
+        this.notificationRepository = notificationRepository;
     }
 
     /**
@@ -192,6 +218,13 @@ public class UserResource {
     public ResponseEntity<Void> deleteUser(@PathVariable @Pattern(regexp = Constants.LOGIN_REGEX) String login) {
         log.debug("REST request to delete User: {}", login);
         userService.deleteUser(login);
+        List<Category> lista = categoryRepository.findByUserLogin(login);
+        List<Notification> lista2 = notificationRepository.findByUserLogin(login);
+        List<HistoryLine> lista3 = historyLineRepository.findByUserLogin(login);
+        for (Category cat : lista) categoryRepository.delete(cat);
+        for (Notification cat : lista2) notificationRepository.delete(cat);
+        for (HistoryLine cat : lista3) historyLineRepository.delete(cat);
+
         return ResponseEntity
             .noContent()
             .headers(HeaderUtil.createAlert(applicationName, "A user is deleted with identifier " + login, login))
