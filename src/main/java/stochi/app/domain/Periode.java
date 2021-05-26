@@ -61,6 +61,12 @@ public class Periode implements Serializable {
         this.fixedMontant = fixedMontant;
     }
 
+    public Periode(LocalDate dateDeb, LocalDate dateFin, String frequancy) {
+        this.dateDeb = dateDeb;
+        this.dateFin = dateFin;
+        this.frequancy = frequancy;
+    }
+
     public Periode(LocalDate dateDeb, LocalDate dateFin, String frequancy, Float fixedMontant, String typeCatego) {
         this.dateDeb = dateDeb;
         this.dateFin = dateFin;

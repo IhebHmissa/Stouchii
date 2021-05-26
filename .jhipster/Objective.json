@@ -1,0 +1,31 @@
+{
+  "fields": [
+    {
+      "fieldName": "name",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "note",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "userLogin",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "amountTot",
+      "fieldType": "Float"
+    },
+    {
+      "fieldName": "amountVar",
+      "fieldType": "Float"
+    }
+  ],
+  "relationships": [],
+  "service": "serviceImpl",
+  "dto": "no",
+  "readOnly": false,
+  "pagination": "infinite-scroll",
+  "name": "Objective",
+  "changelogDate": "20210522174501"
+}

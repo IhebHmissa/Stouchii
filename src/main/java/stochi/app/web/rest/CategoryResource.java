@@ -183,7 +183,6 @@ public class CategoryResource {
             );
             System.out.println("from here ?");
             Optional<User> constants = userRepository.findOneByLogin(catNEW.getUserLogin());
-            System.out.println(constants);
             User value = constants.orElseThrow(() -> new RuntimeException("No such data found"));
             System.out.println(value);
             System.out.println("tak tak ?");
@@ -365,8 +364,7 @@ public class CategoryResource {
                         .getFixedMontant();
                     if (catNotif.getMontant() != null) {
                         if (
-                            (catNotif.getMontant() > 0.9 * salary * catNotif.getAverage()) &
-                            (catNotif.getMontant() < 0.95 * salary * catNotif.getAverage())
+                            (catNotif.getMontant() > 0.9 * catNotif.getAverage()) & (catNotif.getMontant() < 0.95 * catNotif.getAverage())
                         ) {
                             Notification notif = new Notification(
                                 catNotif.getMontant(),
@@ -378,8 +376,7 @@ public class CategoryResource {
                             notificationRepository.save(notif);
                             System.out.println(notif);
                         } else if (
-                            (catNotif.getMontant() > 0.95 * salary * catNotif.getAverage()) &
-                            (catNotif.getMontant() < salary * catNotif.getAverage())
+                            (catNotif.getMontant() > 0.95 * catNotif.getAverage()) & (catNotif.getMontant() < catNotif.getAverage())
                         ) {
                             Notification notif = new Notification(
                                 catNotif.getMontant(),
@@ -390,7 +387,7 @@ public class CategoryResource {
                             );
                             notificationRepository.save(notif);
                             System.out.println(notif);
-                        } else if (catNotif.getMontant() > salary * catNotif.getAverage()) {
+                        } else if (catNotif.getMontant() > catNotif.getAverage()) {
                             Notification notif = new Notification(
                                 catNotif.getMontant(),
                                 value.getLogin(),
@@ -420,10 +417,7 @@ public class CategoryResource {
                         .getPeriodictyy()
                         .getFixedMontant();
                     if (catNEW.getMontant() != null) {
-                        if (
-                            (catNEW.getMontant() > 0.9 * salary * catNEW.getAverage()) &
-                            (catNEW.getMontant() < 0.95 * salary * catNEW.getAverage())
-                        ) {
+                        if ((catNEW.getMontant() > 0.9 * catNEW.getAverage()) & (catNEW.getMontant() < 0.95 * catNEW.getAverage())) {
                             Notification notif = new Notification(
                                 catNEW.getMontant(),
                                 value.getLogin(),
@@ -433,10 +427,7 @@ public class CategoryResource {
                             );
                             notificationRepository.save(notif);
                             System.out.println(notif);
-                        } else if (
-                            (catNEW.getMontant() > 0.95 * salary * catNEW.getAverage()) &
-                            (catNEW.getMontant() < salary * catNEW.getAverage())
-                        ) {
+                        } else if ((catNEW.getMontant() > 0.95 * catNEW.getAverage()) & (catNEW.getMontant() < catNEW.getAverage())) {
                             Notification notif = new Notification(
                                 catNEW.getMontant(),
                                 value.getLogin(),
@@ -446,7 +437,7 @@ public class CategoryResource {
                             );
                             notificationRepository.save(notif);
                             System.out.println(notif);
-                        } else if (catNEW.getMontant() > salary * catNEW.getAverage()) {
+                        } else if (catNEW.getMontant() > catNEW.getAverage()) {
                             Notification notif = new Notification(
                                 catNEW.getMontant(),
                                 value.getLogin(),
@@ -528,6 +519,13 @@ public class CategoryResource {
     public List<Category> getDepenseCategories() {
         log.debug("REST request to get a page of Depense Categories");
         List<Category> var = categoryRepository.findByUserLoginAndType(getCurrentUserLoginn(), "Depense");
+        return var;
+    }
+
+    @GetMapping("/categories/onlycatego")
+    public List<Category> getCatego() {
+        log.debug("REST request to get a page of catego Categories");
+        List<Category> var = categoryRepository.findByUserLoginAndOriginType(getCurrentUserLoginn(), "Catego");
         return var;
     }
 

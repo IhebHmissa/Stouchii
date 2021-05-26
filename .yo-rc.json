@@ -42,7 +42,7 @@
     "prodDatabaseType": "mongodb",
     "clientPackageManager": "npm",
     "languages": ["en", "fr"],
-    "lastLiquibaseTimestamp": 1620052473000,
-    "entities": ["Category", "Periode", "HistoryLine", "Notification", "ApplicationUser"]
+    "lastLiquibaseTimestamp": 1621705501000,
+    "entities": ["Category", "Periode", "HistoryLine", "Notification", "ApplicationUser", "Objective"]
   }
 }

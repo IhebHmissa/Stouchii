@@ -138,6 +138,30 @@ public class Category implements Serializable {
         String nameCatego,
         @Size(max = 7) String color,
         String icopone,
+        String dest,
+        Float average,
+        Float minMontant
+    ) {
+        this.type = type;
+        this.nameCatego = nameCatego;
+        this.originType = originType;
+        this.montant = montant;
+        this.color = color;
+        this.userLogin = userLogin;
+        this.nameIcon = icopone;
+        this.dest = dest;
+        this.average = average;
+        this.minMontant = minMontant;
+    }
+
+    public Category(
+        String type,
+        String userLogin,
+        String originType,
+        Float montant,
+        String nameCatego,
+        @Size(max = 7) String color,
+        String icopone,
         Periode periode
     ) {
         this.type = type;

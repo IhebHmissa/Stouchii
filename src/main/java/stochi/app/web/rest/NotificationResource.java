@@ -6,9 +6,13 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import stochi.app.domain.Notification;
 import stochi.app.domain.User;
+import stochi.app.repository.CategoryRepository;
 import stochi.app.repository.NotificationRepository;
 import stochi.app.repository.UserRepository;
 import stochi.app.service.NotificationService;
@@ -48,15 +53,18 @@ public class NotificationResource {
 
     private final NotificationRepository notificationRepository;
     private final UserRepository userRepository;
+    private final CategoryRepository categoryRepository;
 
     public NotificationResource(
         NotificationService notificationService,
         NotificationRepository notificationRepository,
-        UserRepository userRepository
+        UserRepository userRepository,
+        CategoryRepository categoryRepository
     ) {
         this.notificationService = notificationService;
         this.notificationRepository = notificationRepository;
         this.userRepository = userRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     /**
@@ -188,9 +196,61 @@ public class NotificationResource {
         return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id)).build();
     }
 
+    //private displaynotifs
+    @GetMapping("/notifications/displaynotif")
+    public String displaynotifications() {
+        List<Notification> notications = notificationRepository.findByUserLogin(getCurrentUserLoginn());
+        List<LocalDate> dates = new ArrayList<LocalDate>();
+        List<LocalDate> finale = new ArrayList<LocalDate>();
+        for (Notification notif : notications) {
+            if (notif.getTime() != null) dates.add(notif.getTime());
+        }
+        for (LocalDate element : dates) {
+            // If this element is not present in newList
+            // then add it
+            if (!finale.contains(element)) {
+                finale.add(element);
+            }
+        }
+        JSONObject jo = new JSONObject();
+
+        try {
+            for (LocalDate date : finale) {
+                JSONArray dataR = new JSONArray();
+                List<Notification> notif = notificationRepository.findByUserLoginAndTime(getCurrentUserLoginn(), date);
+                try {
+                    for (Notification notif1 : notif) {
+                        JSONObject jo1 = new JSONObject();
+                        jo1.put("name", notif1.getType());
+                        jo1.put("montant", notif1.getAmount());
+                        jo1.put("category", notif1.getCategoryName());
+                        jo1.put(
+                            "nameIcon",
+                            categoryRepository
+                                .findOneByUserLoginAndNameCatego(getCurrentUserLoginn(), notif1.getCategoryName())
+                                .getNameIcon()
+                        );
+                        jo1.put(
+                            "color",
+                            categoryRepository.findOneByUserLoginAndNameCatego(getCurrentUserLoginn(), notif1.getCategoryName()).getColor()
+                        );
+                        dataR.put(jo1);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                jo.put(String.valueOf(date), dataR);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jo.toString();
+    }
+
     @Scheduled(cron = "0 0 7 * * *", zone = "Africa/Tunis")
     public void Scheduled_task2() {
-        System.out.println("This is a Scheduled TAsk to delete Notifications which they are older then 15 days");
+        System.out.println("This is a Scheduled task to delete Notifications which they are older then 15 days");
 
         List<User> listaa = userRepository.findAll();
         for (User user : listaa) {
