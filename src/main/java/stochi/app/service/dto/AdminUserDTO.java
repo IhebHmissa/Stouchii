@@ -55,6 +55,7 @@ public class AdminUserDTO {
     private Float solduserrevenus;
     private Float salary;
     private LocalDate dateSalary;
+    private String typeUser;
 
     public AdminUserDTO() {
         // Empty constructor needed for Jackson.
@@ -77,6 +78,7 @@ public class AdminUserDTO {
         this.soldeUser = user.getSoldeUser();
         this.salary = user.getSalary();
         this.dateSalary = user.getDateSalary();
+        this.typeUser = user.getTypeUser();
     }
 
     public String getId() {
@@ -101,6 +103,14 @@ public class AdminUserDTO {
 
     public void setFirstName(String firstName) {
         this.firstName = firstName;
+    }
+
+    public String getTypeUser() {
+        return typeUser;
+    }
+
+    public void setTypeUser(String typeUser) {
+        this.typeUser = typeUser;
     }
 
     public String getLastName() {

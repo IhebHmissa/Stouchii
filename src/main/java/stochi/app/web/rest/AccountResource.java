@@ -113,7 +113,23 @@ public class AccountResource {
         return userService.soldeUser(getCurrentUserLoginn());
     }
 
+    @GetMapping("/kid/piggy")
+    public Float getpiggybanksolde() {
+        return userService.pigybangsolde(getCurrentUserLoginn());
+    }
+
+    @PostMapping("/kid/piggy")
+    public void setpiggysolde(@Valid @RequestBody AdminUserDTO userDTO) {
+        userService.setpigybangsolde(getCurrentUserLoginn(), userDTO.getSalary());
+    }
+
+    @PostMapping("/kid/add")
+    public void setsoldeuser(@Valid @RequestBody AdminUserDTO userDTO) {
+        userService.setkidsolde(getCurrentUserLoginn(), userDTO.getSalary(), userDTO.getFirstName());
+    }
+
     /**
+     *
      * {@code POST  /account} : update the current user information.
      *
      * @param userDTO the current user information.

@@ -158,11 +158,11 @@ public class CategoryResource {
         if (category.getPeriodictyy() != null) {
             catNEW.setPeriodictyy(category.getPeriodictyy());
             if (catNEW.getPeriodictyy().getDateFin() != null) {
-                if (catNEW.getPeriodictyy().getFrequancy().equals("semaine")) catNEW.setperiodicity(0L);
-                if (catNEW.getPeriodictyy().getFrequancy().equals("2semaine")) catNEW.setperiodicity(0L);
-                if (catNEW.getPeriodictyy().getFrequancy().equals("trimestre")) catNEW.setperiodicity(0L);
-                if (catNEW.getPeriodictyy().getFrequancy().equals("semestre")) catNEW.setperiodicity(0L);
-                if (catNEW.getPeriodictyy().getFrequancy().equals("annee")) catNEW.setperiodicity(0L);
+                if (catNEW.getPeriodictyy().getFrequancy().equals("week")) catNEW.setperiodicity(0L);
+                if (catNEW.getPeriodictyy().getFrequancy().equals("Two weeks")) catNEW.setperiodicity(0L);
+                if (catNEW.getPeriodictyy().getFrequancy().equals("trimestr")) catNEW.setperiodicity(0L);
+                if (catNEW.getPeriodictyy().getFrequancy().equals("semestr")) catNEW.setperiodicity(0L);
+                if (catNEW.getPeriodictyy().getFrequancy().equals("year")) catNEW.setperiodicity(0L);
             } else catNEW.setperiodicity(0L);
             System.out.println(category.getPeriodictyy());
         }
@@ -371,7 +371,9 @@ public class CategoryResource {
                                 value.getLogin(),
                                 catNotif.getNameCatego(),
                                 LocalDate.now(),
-                                "90% exceeded"
+                                "90% exceeded",
+                                "yellow",
+                                "warning"
                             );
                             notificationRepository.save(notif);
                             System.out.println(notif);
@@ -383,7 +385,9 @@ public class CategoryResource {
                                 value.getLogin(),
                                 catNotif.getNameCatego(),
                                 LocalDate.now(),
-                                "95% exceeded"
+                                "95% exceeded",
+                                "yellow",
+                                "warning"
                             );
                             notificationRepository.save(notif);
                             System.out.println(notif);
@@ -393,7 +397,9 @@ public class CategoryResource {
                                 value.getLogin(),
                                 catNotif.getNameCatego(),
                                 LocalDate.now(),
-                                "100% exceeded"
+                                "100% exceeded",
+                                "red",
+                                "skull"
                             );
                             notificationRepository.save(notif);
                             System.out.println(notif);
@@ -423,7 +429,9 @@ public class CategoryResource {
                                 value.getLogin(),
                                 catNEW.getNameCatego(),
                                 LocalDate.now(),
-                                "90% exceeded"
+                                "90% exceeded",
+                                "yellow",
+                                "warning"
                             );
                             notificationRepository.save(notif);
                             System.out.println(notif);
@@ -433,7 +441,9 @@ public class CategoryResource {
                                 value.getLogin(),
                                 catNEW.getNameCatego(),
                                 LocalDate.now(),
-                                "95% exceeded"
+                                "95% exceeded",
+                                "yellow",
+                                "warning"
                             );
                             notificationRepository.save(notif);
                             System.out.println(notif);
@@ -443,7 +453,9 @@ public class CategoryResource {
                                 value.getLogin(),
                                 catNEW.getNameCatego(),
                                 LocalDate.now(),
-                                "100% exceeded"
+                                "100% exceeded",
+                                "red",
+                                "skull"
                             );
                             notificationRepository.save(notif);
                             System.out.println(notif);
@@ -511,7 +523,9 @@ public class CategoryResource {
     public List<String> getAllCategoriesnames() {
         List<Category> lista = categoryRepository.findByUserLogin(getCurrentUserLoginn());
         List<String> names = new ArrayList<String>();
-        for (Category cat : lista) names.add(cat.getNameCatego());
+        for (Category cat : lista) if (!cat.getNameIcon().equals("goal")) {
+            names.add(cat.getNameCatego());
+        }
         return names;
     }
 
@@ -525,7 +539,12 @@ public class CategoryResource {
     @GetMapping("/categories/onlycatego")
     public List<Category> getCatego() {
         log.debug("REST request to get a page of catego Categories");
-        List<Category> var = categoryRepository.findByUserLoginAndOriginType(getCurrentUserLoginn(), "Catego");
+
+        List<Category> var = new ArrayList<Category>();
+        List<Category> var1 = categoryRepository.findByUserLoginAndOriginType(getCurrentUserLoginn(), "Catego");
+        for (Category cat : var1) if (!cat.getNameIcon().equals("goal")) {
+            var.add(cat);
+        }
         return var;
     }
 
@@ -640,7 +659,9 @@ public class CategoryResource {
                 user.getLogin(),
                 catego.getNameCatego(),
                 LocalDate.now(),
-                "Money out"
+                "Money out",
+                "blue",
+                "refresh-circle"
             );
             notificationRepository.save(notif);
             System.out.println(notif);
@@ -651,7 +672,9 @@ public class CategoryResource {
                 user.getLogin(),
                 catego.getNameCatego(),
                 LocalDate.now(),
-                "Money IN"
+                "Money IN",
+                "blue",
+                "refresh-circle"
             );
             notificationRepository.save(notif);
             System.out.println(notif);
@@ -668,12 +691,13 @@ public class CategoryResource {
         );
         try {
             for (Category catego : listecategoDepense) {
-                System.out.println("here");
-                JSONObject jo = new JSONObject();
-                jo.put("value", catego.getMontant());
-                jo.put("label", catego.getNameCatego());
-                jo.put("color", catego.getColor());
-                ja.put(jo);
+                if (!catego.getNameIcon().equals("goal")) {
+                    JSONObject jo = new JSONObject();
+                    jo.put("value", catego.getMontant());
+                    jo.put("label", catego.getNameCatego());
+                    jo.put("color", catego.getColor());
+                    ja.put(jo);
+                }
             }
         } catch (JSONException e) {
             System.out.println("here2");
@@ -689,11 +713,13 @@ public class CategoryResource {
         List<Category> listecategoDepense = categoryRepository.findByUserLoginAndOriginType(getCurrentUserLoginn(), "Catego");
         try {
             for (Category catego : listecategoDepense) {
-                JSONObject jo = new JSONObject();
-                jo.put("value", catego.getMontant());
-                jo.put("label", catego.getNameCatego());
-                jo.put("color", catego.getColor());
-                ja.put(jo);
+                if (!catego.getNameIcon().equals("goal")) {
+                    JSONObject jo = new JSONObject();
+                    jo.put("value", catego.getMontant());
+                    jo.put("label", catego.getNameCatego());
+                    jo.put("color", catego.getColor());
+                    ja.put(jo);
+                }
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -759,7 +785,7 @@ public class CategoryResource {
                     }
                     if (stayin) {
                         if (
-                            catego.getPeriodictyy().getFrequancy().equals("mois") &
+                            catego.getPeriodictyy().getFrequancy().equals("month") &
                             catego.getPeriodictyy().getDateDeb().isBefore(LocalDate.now())
                         ) {
                             if (ZonedDateTime.now().getDayOfMonth() == catego.getPeriodictyy().getDateDeb().getDayOfMonth()) {
@@ -777,7 +803,7 @@ public class CategoryResource {
                         }
 
                         if (
-                            catego.getPeriodictyy().getFrequancy().equals("mois") &
+                            catego.getPeriodictyy().getFrequancy().equals("month") &
                             catego.getPeriodictyy().getDateDeb().isAfter(LocalDate.now())
                         ) {
                             if (ZonedDateTime.now().getDayOfMonth() == catego.getPeriodictyy().getDateDeb().minusDays(1).getDayOfMonth()) {
@@ -787,7 +813,9 @@ public class CategoryResource {
                                         user.getLogin(),
                                         catego.getNameCatego(),
                                         LocalDate.now(),
-                                        "1Day left"
+                                        "1Day left",
+                                        "blue",
+                                        "refresh-circle"
                                     );
                                     notificationRepository.save(notif);
                                     System.out.println(notif);
@@ -800,7 +828,9 @@ public class CategoryResource {
                                         user.getLogin(),
                                         catego.getNameCatego(),
                                         LocalDate.now(),
-                                        "1Day left"
+                                        "1Day left",
+                                        "blue",
+                                        "refresh-circle"
                                     );
                                     notificationRepository.save(notif);
                                     System.out.println(notif);
@@ -809,7 +839,7 @@ public class CategoryResource {
                         }
 
                         if (
-                            catego.getPeriodictyy().getFrequancy().equals("jour") &
+                            catego.getPeriodictyy().getFrequancy().equals("day") &
                             catego.getPeriodictyy().getDateDeb().isBefore(LocalDate.now())
                         ) {
                             System.out.println(catego.getPeriodictyy().getDateDeb());
@@ -822,7 +852,7 @@ public class CategoryResource {
                         }
 
                         if (
-                            catego.getPeriodictyy().getFrequancy().equals("semaine") &
+                            catego.getPeriodictyy().getFrequancy().equals("week") &
                             catego.getPeriodictyy().getDateDeb().isBefore(LocalDate.now())
                         ) {
                             if ((catego.getPeriodictyy().getDateFin() == null)) {
@@ -847,7 +877,7 @@ public class CategoryResource {
                             }
                         }
                         if (
-                            catego.getPeriodictyy().getFrequancy().equals("2semaine") &
+                            catego.getPeriodictyy().getFrequancy().equals("two weeks") &
                             catego.getPeriodictyy().getDateDeb().isBefore(LocalDate.now())
                         ) {
                             if ((catego.getPeriodictyy().getDateFin() == null)) {
@@ -873,7 +903,7 @@ public class CategoryResource {
                         }
 
                         if (
-                            catego.getPeriodictyy().getFrequancy().equals("trimestre") &
+                            catego.getPeriodictyy().getFrequancy().equals("trimestr") &
                             catego.getPeriodictyy().getDateDeb().isBefore(LocalDate.now()) &
                             (ZonedDateTime.now().getDayOfMonth() == catego.getPeriodictyy().getDateDeb().getDayOfMonth())
                         ) {
@@ -900,7 +930,7 @@ public class CategoryResource {
                         }
 
                         if (
-                            catego.getPeriodictyy().getFrequancy().equals("semestre") &
+                            catego.getPeriodictyy().getFrequancy().equals("semestr") &
                             catego.getPeriodictyy().getDateDeb().isBefore(LocalDate.now()) &
                             (ZonedDateTime.now().getDayOfMonth() == catego.getPeriodictyy().getDateDeb().getDayOfMonth())
                         ) {
@@ -926,7 +956,7 @@ public class CategoryResource {
                             }
                         }
                         if (
-                            catego.getPeriodictyy().getFrequancy().equals("annee") &
+                            catego.getPeriodictyy().getFrequancy().equals("year") &
                             catego.getPeriodictyy().getDateDeb().isBefore(LocalDate.now())
                         ) {
                             if (ZonedDateTime.now().getDayOfYear() == catego.getPeriodictyy().getDateDeb().getDayOfYear()) {
@@ -1013,24 +1043,35 @@ public class CategoryResource {
     public void scheduledtask3() {
         List<User> listaa = userRepository.findAll();
         for (User user : listaa) {
-            System.out.println(user.getLogin());
-            if (user.getDateSalary() != null & user.getSalary() != null) {
-                if (LocalDate.now().isBefore(user.getDateSalary().plusMonths(3))) {
-                    System.out.println("3 Months varibales update ");
-                    List<Category> listaa2 = categoryRepository.findByUserLoginAndOriginType(user.getLogin(), "Catego");
-                    for (Category cat : listaa2) {
-                        if ((cat.getAverage() != null)) {
-                            if (
-                                (
-                                    cat
-                                        .getAverage()
-                                        .equals(
-                                            categoryRepository
-                                                .findOneByUserLoginAndNameCatego("fixeduser", cat.getNameCatego())
-                                                .getAverage()
-                                        )
-                                )
-                            ) cat.setAverage(
+            if (user.getTypeUser().equals("adult")) {
+                System.out.println(user.getLogin());
+                if (user.getDateSalary() != null & user.getSalary() != null) {
+                    if (LocalDate.now().isBefore(user.getDateSalary().plusMonths(3))) {
+                        System.out.println("3 Months varibales update ");
+                        List<Category> listaa2 = categoryRepository.findByUserLoginAndOriginType(user.getLogin(), "Catego");
+                        for (Category cat : listaa2) {
+                            if ((cat.getAverage() != null)) {
+                                if (
+                                    (
+                                        cat
+                                            .getAverage()
+                                            .equals(
+                                                categoryRepository
+                                                    .findOneByUserLoginAndNameCatego("fixeduser", cat.getNameCatego())
+                                                    .getAverage()
+                                            )
+                                    )
+                                ) cat.setAverage(
+                                    avregeInThreeMo(
+                                        user.getLogin(),
+                                        cat.getNameCatego(),
+                                        categoryRepository
+                                            .findOneByUserLoginAndNameCatego(user.getLogin(), "Salary")
+                                            .getPeriodictyy()
+                                            .getFixedMontant()
+                                    )
+                                );
+                            } else cat.setAverage(
                                 avregeInThreeMo(
                                     user.getLogin(),
                                     cat.getNameCatego(),
@@ -1040,29 +1081,29 @@ public class CategoryResource {
                                         .getFixedMontant()
                                 )
                             );
-                        } else cat.setAverage(
-                            avregeInThreeMo(
-                                user.getLogin(),
-                                cat.getNameCatego(),
-                                categoryRepository
-                                    .findOneByUserLoginAndNameCatego(user.getLogin(), "Salary")
-                                    .getPeriodictyy()
-                                    .getFixedMontant()
-                            )
-                        );
 
-                        if ((cat.getMinMontant() != null)) {
-                            if (
-                                (
-                                    cat
-                                        .getMinMontant()
-                                        .equals(
-                                            categoryRepository
-                                                .findOneByUserLoginAndNameCatego("fixeduser", cat.getNameCatego())
-                                                .getMinMontant()
-                                        )
-                                )
-                            ) cat.setMinMontant(
+                            if ((cat.getMinMontant() != null)) {
+                                if (
+                                    (
+                                        cat
+                                            .getMinMontant()
+                                            .equals(
+                                                categoryRepository
+                                                    .findOneByUserLoginAndNameCatego("fixeduser", cat.getNameCatego())
+                                                    .getMinMontant()
+                                            )
+                                    )
+                                ) cat.setMinMontant(
+                                    minMongeInThreeMo(
+                                        user.getLogin(),
+                                        cat.getNameCatego(),
+                                        categoryRepository
+                                            .findOneByUserLoginAndNameCatego(user.getLogin(), "Salary")
+                                            .getPeriodictyy()
+                                            .getFixedMontant()
+                                    )
+                                );
+                            } else cat.setMinMontant(
                                 minMongeInThreeMo(
                                     user.getLogin(),
                                     cat.getNameCatego(),
@@ -1072,29 +1113,29 @@ public class CategoryResource {
                                         .getFixedMontant()
                                 )
                             );
-                        } else cat.setMinMontant(
-                            minMongeInThreeMo(
-                                user.getLogin(),
-                                cat.getNameCatego(),
-                                categoryRepository
-                                    .findOneByUserLoginAndNameCatego(user.getLogin(), "Salary")
-                                    .getPeriodictyy()
-                                    .getFixedMontant()
-                            )
-                        );
 
-                        if ((cat.getMaxMontant() != null)) {
-                            if (
-                                (
-                                    cat
-                                        .getMaxMontant()
-                                        .equals(
-                                            categoryRepository
-                                                .findOneByUserLoginAndNameCatego("fixeduser", cat.getNameCatego())
-                                                .getMaxMontant()
-                                        )
-                                )
-                            ) cat.setMaxMontant(
+                            if ((cat.getMaxMontant() != null)) {
+                                if (
+                                    (
+                                        cat
+                                            .getMaxMontant()
+                                            .equals(
+                                                categoryRepository
+                                                    .findOneByUserLoginAndNameCatego("fixeduser", cat.getNameCatego())
+                                                    .getMaxMontant()
+                                            )
+                                    )
+                                ) cat.setMaxMontant(
+                                    maxMongeInThreeMo(
+                                        user.getLogin(),
+                                        cat.getNameCatego(),
+                                        categoryRepository
+                                            .findOneByUserLoginAndNameCatego(user.getLogin(), "Salary")
+                                            .getPeriodictyy()
+                                            .getFixedMontant()
+                                    )
+                                );
+                            } else cat.setMaxMontant(
                                 maxMongeInThreeMo(
                                     user.getLogin(),
                                     cat.getNameCatego(),
@@ -1104,21 +1145,12 @@ public class CategoryResource {
                                         .getFixedMontant()
                                 )
                             );
-                        } else cat.setMaxMontant(
-                            maxMongeInThreeMo(
-                                user.getLogin(),
-                                cat.getNameCatego(),
-                                categoryRepository
-                                    .findOneByUserLoginAndNameCatego(user.getLogin(), "Salary")
-                                    .getPeriodictyy()
-                                    .getFixedMontant()
-                            )
-                        );
 
-                        categoryRepository.save(cat);
+                            categoryRepository.save(cat);
+                        }
+                        user.setDateSalary(LocalDate.now());
+                        userRepository.save(user);
                     }
-                    user.setDateSalary(LocalDate.now());
-                    userRepository.save(user);
                 }
             }
         }

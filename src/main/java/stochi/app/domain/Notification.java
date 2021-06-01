@@ -33,7 +33,21 @@ public class Notification implements Serializable {
     @Field("type")
     private String type;
 
+    private String color;
+
+    private String icon;
+
     public Notification() {}
+
+    public Notification(Float amount, String userLogin, String categoryName, LocalDate time, String type, String color, String icon) {
+        this.amount = amount;
+        this.userLogin = userLogin;
+        this.categoryName = categoryName;
+        this.time = time;
+        this.type = type;
+        this.color = color;
+        this.icon = icon;
+    }
 
     public Notification(Float amount, String userLogin, String categoryName, LocalDate time, String type) {
         this.amount = amount;
@@ -103,6 +117,22 @@ public class Notification implements Serializable {
     public Notification time(LocalDate time) {
         this.time = time;
         return this;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 
     public void setTime(LocalDate time) {

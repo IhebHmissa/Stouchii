@@ -67,18 +67,25 @@ public class Periode implements Serializable {
         this.frequancy = frequancy;
     }
 
+    public Periode(LocalDate dateDeb, LocalDate dateFin, String frequancy, Float fixed) {
+        this.dateDeb = dateDeb;
+        this.dateFin = dateFin;
+        this.frequancy = frequancy;
+        this.fixedMontant = fixed;
+    }
+
     public Periode(LocalDate dateDeb, LocalDate dateFin, String frequancy, Float fixedMontant, String typeCatego) {
         this.dateDeb = dateDeb;
         this.dateFin = dateFin;
         this.frequancy = frequancy;
         if (dateFin != null) {
-            if (frequancy.equals("jour")) this.numberleft = calculDurations(dateDeb, dateFin)[0];
-            if (frequancy.equals("semaine")) this.numberleft = calculDurations(dateDeb, dateFin)[0] / 7;
-            if (frequancy.equals("2semaine")) this.numberleft = calculDurations(dateDeb, dateFin)[0] / 14;
-            if (frequancy.equals("mois")) this.numberleft = calculDurations(dateDeb, dateFin)[1];
-            if (frequancy.equals("trimestre")) this.numberleft = calculDurations(dateDeb, dateFin)[1] / 4;
-            if (frequancy.equals("semestre")) this.numberleft = calculDurations(dateDeb, dateFin)[1] / 6;
-            if (frequancy.equals("annee")) this.numberleft = calculDurations(dateDeb, dateFin)[2];
+            if (frequancy.equals("day")) this.numberleft = calculDurations(dateDeb, dateFin)[0];
+            if (frequancy.equals("week")) this.numberleft = calculDurations(dateDeb, dateFin)[0] / 7;
+            if (frequancy.equals("two weeks")) this.numberleft = calculDurations(dateDeb, dateFin)[0] / 14;
+            if (frequancy.equals("month")) this.numberleft = calculDurations(dateDeb, dateFin)[1];
+            if (frequancy.equals("trimestr")) this.numberleft = calculDurations(dateDeb, dateFin)[1] / 4;
+            if (frequancy.equals("semestr")) this.numberleft = calculDurations(dateDeb, dateFin)[1] / 6;
+            if (frequancy.equals("year")) this.numberleft = calculDurations(dateDeb, dateFin)[2];
         } else this.numberleft = 0L;
         this.fixedMontant = fixedMontant;
         this.typeCatego = typeCatego;

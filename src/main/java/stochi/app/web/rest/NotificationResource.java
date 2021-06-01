@@ -224,16 +224,8 @@ public class NotificationResource {
                         jo1.put("name", notif1.getType());
                         jo1.put("montant", notif1.getAmount());
                         jo1.put("category", notif1.getCategoryName());
-                        jo1.put(
-                            "nameIcon",
-                            categoryRepository
-                                .findOneByUserLoginAndNameCatego(getCurrentUserLoginn(), notif1.getCategoryName())
-                                .getNameIcon()
-                        );
-                        jo1.put(
-                            "color",
-                            categoryRepository.findOneByUserLoginAndNameCatego(getCurrentUserLoginn(), notif1.getCategoryName()).getColor()
-                        );
+                        jo1.put("nameIcon", notif1.getIcon());
+                        jo1.put("color", notif1.getColor());
                         dataR.put(jo1);
                     }
                 } catch (JSONException e) {
@@ -254,11 +246,13 @@ public class NotificationResource {
 
         List<User> listaa = userRepository.findAll();
         for (User user : listaa) {
-            List<Notification> notifs = notificationRepository.findByUserLogin(user.getLogin());
+            if (user.getTypeUser().equals("adult")) {
+                List<Notification> notifs = notificationRepository.findByUserLogin(user.getLogin());
 
-            for (Notification notif : notifs) {
-                if (notif.getTime().isBefore(LocalDate.now().minusDays(15))) {
-                    notificationService.delete(notif.getId());
+                for (Notification notif : notifs) {
+                    if (notif.getTime().isBefore(LocalDate.now().minusDays(15))) {
+                        notificationService.delete(notif.getId());
+                    }
                 }
             }
         }

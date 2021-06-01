@@ -84,6 +84,7 @@ public class User extends AbstractAuditingEntity implements Serializable {
     private Float salary;
 
     private LocalDate dateSalary;
+    private String typeUser;
 
     @JsonIgnore
     private Set<Authority> authorities = new HashSet<>();
@@ -223,6 +224,14 @@ public class User extends AbstractAuditingEntity implements Serializable {
 
     public void setDateSalary(LocalDate dateSalary) {
         this.dateSalary = dateSalary;
+    }
+
+    public String getTypeUser() {
+        return typeUser;
+    }
+
+    public void setTypeUser(String typeUser) {
+        this.typeUser = typeUser;
     }
 
     public Float getSalary() {

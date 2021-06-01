@@ -84,6 +84,26 @@ public class Category implements Serializable {
         this.average = average;
     }
 
+    public Category(
+        String type,
+        String nameCatego,
+        String originType,
+        Float montant,
+        @Size(max = 7) String color,
+        String userLogin,
+        Periode periodictyy,
+        String nameIcon
+    ) {
+        this.type = type;
+        this.nameCatego = nameCatego;
+        this.originType = originType;
+        this.montant = montant;
+        this.color = color;
+        this.userLogin = userLogin;
+        this.periodictyy = periodictyy;
+        this.nameIcon = nameIcon;
+    }
+
     public Category(String type, Float montant, String nameCatego, String note, LocalDate date) {
         this.type = type;
         this.nameCatego = nameCatego;
