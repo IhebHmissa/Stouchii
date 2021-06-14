@@ -14,4 +14,5 @@ import stochi.app.domain.Objective;
 public interface ObjectiveRepository extends MongoRepository<Objective, String> {
     Objective findOneByUserLoginAndName(String login, String nameobj);
     List<Objective> findByUserLogin(String user);
+    List<Objective> findByUserLoginAndType(String login, String type);
 }

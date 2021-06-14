@@ -190,8 +190,8 @@ public class UserService {
                 "red",
                 "cutlery",
                 "FoodCategorie",
-                (float) 0.35 * newUser.getSalary(),
-                (float) 0.3 * newUser.getSalary()
+                (float) 0.30 * newUser.getSalary(),
+                (float) 0.28 * newUser.getSalary()
             );
             categoryService.save(cat1);
             Category cat2 = new Category(
@@ -203,8 +203,8 @@ public class UserService {
                 "#1DAED9",
                 "home",
                 "HousingCategorie",
-                (float) 0.30 * newUser.getSalary(),
-                (float) 0.25 * newUser.getSalary()
+                (float) 0.25 * newUser.getSalary(),
+                (float) 0.23 * newUser.getSalary()
             );
             categoryService.save(cat2);
             Category cat3 = new Category(
@@ -216,8 +216,8 @@ public class UserService {
                 "green",
                 "heartbeat",
                 "HealthCategorie",
-                (float) 0.15 * newUser.getSalary(),
-                (float) 0.1 * newUser.getSalary()
+                (float) 0.10 * newUser.getSalary(),
+                (float) 0.09 * newUser.getSalary()
             );
             categoryService.save(cat3);
             Category cat4 = new Category(
@@ -230,7 +230,7 @@ public class UserService {
                 "tasks",
                 "PubliCategorie",
                 (float) 0.1 * newUser.getSalary(),
-                (float) 0.05 * newUser.getSalary()
+                (float) 0.08 * newUser.getSalary()
             );
             categoryService.save(cat4);
             Category cat5 = new Category(
@@ -243,7 +243,7 @@ public class UserService {
                 "bus",
                 "TransportCategorie",
                 (float) 0.15 * newUser.getSalary(),
-                (float) 0.1 * newUser.getSalary()
+                (float) 0.13 * newUser.getSalary()
             );
             categoryService.save(cat5);
             Category cat6 = new Category(
@@ -255,8 +255,8 @@ public class UserService {
                 "#E90454",
                 "graduation-cap",
                 "EducationCategorie",
-                (float) 0.35 * newUser.getSalary(),
-                (float) 0.3 * newUser.getSalary()
+                (float) 0.15 * newUser.getSalary(),
+                (float) 0.13 * newUser.getSalary()
             );
             categoryService.save(cat6);
             Category cat7 = new Category(
@@ -268,8 +268,8 @@ public class UserService {
                 "#58CB39",
                 "smile-o",
                 "FunCategorie",
-                (float) 0.1 * newUser.getSalary(),
-                (float) 0.05 * newUser.getSalary()
+                (float) 0.05 * newUser.getSalary(),
+                (float) 0.04 * newUser.getSalary()
             );
             categoryService.save(cat7);
             Category cat8 = new Category(
@@ -282,7 +282,7 @@ public class UserService {
                 "cart-plus",
                 "VariousCategorie",
                 (float) 0.05 * newUser.getSalary(),
-                (float) 0.025 * newUser.getSalary()
+                (float) 0.04 * newUser.getSalary()
             );
             categoryService.save(cat8);
             Category cat9 = new Category(
@@ -295,7 +295,7 @@ public class UserService {
                 "warning",
                 "UnexCategorie",
                 (float) 0.05 * newUser.getSalary(),
-                (float) 0.025 * newUser.getSalary()
+                (float) 0.04 * newUser.getSalary()
             );
             categoryService.save(cat9);
             Category cat10 = new Category("Depense", newUser.getLogin(), "Food & Drinks", 0f, "Food", "red", "fast-food");

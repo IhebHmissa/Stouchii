@@ -113,7 +113,7 @@ public class AccountResource {
         return userService.soldeUser(getCurrentUserLoginn());
     }
 
-    @GetMapping("/kid/piggy")
+    @GetMapping("kid/piggy/")
     public Float getpiggybanksolde() {
         return userService.pigybangsolde(getCurrentUserLoginn());
     }

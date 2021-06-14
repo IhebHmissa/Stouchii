@@ -80,7 +80,7 @@ This part is for validating a suggestion !
         if (objective.getId() != null) {
             throw new BadRequestAlertException("A new objective cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        if (objective.getAmountTot() > calculsavingss(objective)) {
+        if (objective.getPeriodicity().getDateFin().isAfter(findardharddate(objective))) {
             throw new BadRequestAlertException("You can't save this amount in that period of time ", ENTITY_NAME, "ImpossibleObjective");
         }
         if (categoryRepository.findOneByUserLoginAndNameCatego(getCurrentUserLoginn(), objective.getName()) != null) {
@@ -108,6 +108,19 @@ This part is for validating a suggestion !
             .body(result);
     }
 
+    /*private  Boolean checkexisting (Objective obj)
+    {
+        Boolean result = true;
+        if ( obj.getType()!=null) {
+            if (objectiveRepository.findByUserLoginAndType(getCurrentUserLoginn(), "Hard").isEmpty())
+            {
+                return false;
+            }
+
+        }
+    }
+    */
+
     /*
 This part is for giving Suggestions
 */
@@ -115,7 +128,7 @@ This part is for giving Suggestions
         long years = ChronoUnit.YEARS.between(DDB, DDF);
 
         long months = ChronoUnit.MONTHS.between(DDB, DDF);
-        System.out.println(months);
+        System.out.println("number of monthes :" + months);
         long days = ChronoUnit.DAYS.between(DDB, DDF);
 
         return new long[] { days, months, years };
@@ -139,13 +152,13 @@ This part is for giving Suggestions
         for (Category cat : listaaa) {
             if (cat.getPeriodictyy() != null) {
                 if ((cat.getPeriodictyy().getDateFin() != null) & (cat.getPeriodictyy().getDateDeb() != null)) {
-                    System.out.println(cat.getNameCatego() + "here2");
+                    //System.out.println(cat.getNameCatego() + "here2");
                     if (
                         obj.getPeriodicity().getDateDeb().isAfter(cat.getPeriodictyy().getDateDeb()) &
                         obj.getPeriodicity().getDateFin().isBefore(cat.getPeriodictyy().getDateFin())
                     ) {
                         if ((cat.getPeriodictyy().getFrequancy().equals("month")) & (cat.getPeriodictyy().getFrequancy() != null)) savings =
-                            savings + cat.getPeriodictyy().getFixedMontant() * calculDurations(obj.getPeriodicity().getDateDeb(), DDF)[1];
+                            savings + cat.getPeriodictyy().getFixedMontant();
                         if ((cat.getPeriodictyy().getFrequancy().equals("week")) & (cat.getPeriodictyy().getFrequancy() != null)) savings =
                             savings +
                             cat.getPeriodictyy().getFixedMontant() *
@@ -178,9 +191,9 @@ This part is for giving Suggestions
                 }
                 if ((cat.getPeriodictyy().getDateFin() == null) & (cat.getPeriodictyy().getDateDeb() != null)) {
                     if (obj.getPeriodicity().getDateDeb().isAfter(cat.getPeriodictyy().getDateDeb())) {
-                        System.out.println(cat.getNameCatego() + "here2");
+                        //System.out.println(cat.getNameCatego() + "here235");
                         if ((cat.getPeriodictyy().getFrequancy().equals("month")) & (cat.getPeriodictyy().getFrequancy() != null)) savings =
-                            savings + cat.getPeriodictyy().getFixedMontant() * calculDurations(obj.getPeriodicity().getDateDeb(), DDF)[1];
+                            savings + cat.getPeriodictyy().getFixedMontant();
                         if ((cat.getPeriodictyy().getFrequancy().equals("week")) & (cat.getPeriodictyy().getFrequancy() != null)) savings =
                             savings +
                             cat.getPeriodictyy().getFixedMontant() *
@@ -220,9 +233,8 @@ This part is for giving Suggestions
                         obj.getPeriodicity().getDateDeb().isAfter(cat.getPeriodictyy().getDateDeb()) &
                         obj.getPeriodicity().getDateFin().isBefore(cat.getPeriodictyy().getDateFin())
                     ) {
-                        System.out.println(cat.getNameCatego() + "here2");
-                        if (cat.getPeriodictyy().getFrequancy().equals("month")) savings =
-                            savings - cat.getPeriodictyy().getFixedMontant() * calculDurations(obj.getPeriodicity().getDateDeb(), DDF)[1];
+                        //System.out.println(cat.getNameCatego() + "here23");
+                        if (cat.getPeriodictyy().getFrequancy().equals("month")) savings = savings - cat.getPeriodictyy().getFixedMontant();
                         if (cat.getPeriodictyy().getFrequancy().equals("week")) savings =
                             savings -
                             cat.getPeriodictyy().getFixedMontant() *
@@ -245,13 +257,14 @@ This part is for giving Suggestions
                             2;
                         if (cat.getPeriodictyy().getFrequancy().equals("year")) savings =
                             savings - cat.getPeriodictyy().getFixedMontant() * calculDurations(obj.getPeriodicity().getDateDeb(), DDF)[2];
-                        System.out.println(savings);
+                        //System.out.println(savings);
+                        // System.out.println("NAMEEEE "+cat.getNameCatego());
+
                     }
                 }
                 if ((cat.getPeriodictyy().getDateFin() == null) & (cat.getPeriodictyy().getDateDeb() != null)) {
                     if (obj.getPeriodicity().getDateDeb().isAfter(cat.getPeriodictyy().getDateDeb())) {
-                        if (cat.getPeriodictyy().getFrequancy().equals("month")) savings =
-                            savings - cat.getPeriodictyy().getFixedMontant() * calculDurations(obj.getPeriodicity().getDateDeb(), DDF)[1];
+                        if (cat.getPeriodictyy().getFrequancy().equals("month")) savings = savings - cat.getPeriodictyy().getFixedMontant();
                         if (cat.getPeriodictyy().getFrequancy().equals("week")) savings =
                             savings -
                             cat.getPeriodictyy().getFixedMontant() *
@@ -274,7 +287,9 @@ This part is for giving Suggestions
                             2;
                         if (cat.getPeriodictyy().getFrequancy().equals("year")) savings =
                             savings - cat.getPeriodictyy().getFixedMontant() * calculDurations(obj.getPeriodicity().getDateDeb(), DDF)[2];
-                        System.out.println(savings);
+                        //System.out.println("savings"+savings);
+                        //System.out.println("NAMEEEE "+cat.getNameCatego());
+
                     }
                 }
             }
@@ -285,13 +300,13 @@ This part is for giving Suggestions
 
     private Float calculsavingss(Objective obj) {
         Float savings = 0F;
-        System.out.println(getCurrentUserLoginn());
+        //System.out.println(getCurrentUserLoginn());
         List<Category> listRE = categoryRepository.findByUserLoginAndTypeAndOriginType(getCurrentUserLoginn(), "Depense", "Catego");
 
         for (Category cat : listRE) {
             if (cat.getMontant() != null) {
                 if (cat.getMontant() != 0F) {
-                    System.out.println(cat.getNameCatego());
+                    // System.out.println(cat.getNameCatego());
                     savings =
                         savings +
                         (cat.getAverage() - cat.getMinMontant()) *
@@ -299,6 +314,8 @@ This part is for giving Suggestions
                 }
             }
         }
+
+        System.out.println(savings + calculsavings(obj, obj.getPeriodicity().getDateFin()));
         return savings + calculsavings(obj, obj.getPeriodicity().getDateFin());
     }
 
@@ -311,12 +328,24 @@ This part is for giving Suggestions
 
         for (Category cat : listRE) {
             if (cat.getMontant() != null) if (cat.getMontant() != 0) savingsolde = savingsolde + cat.getAverage() - cat.getMinMontant();
-            System.out.println(savingsolde);
+            //System.out.println(savingsolde);
         }
 
         DDF = DDB.plusMonths((long) (Fixed / savingsolde));
 
         return DDF;
+    }
+
+    private Float SavingfromCateg() {
+        Float savingsolde = 0F;
+        List<Category> listRE = categoryRepository.findByUserLoginAndTypeAndOriginType(getCurrentUserLoginn(), "Depense", "Catego");
+
+        for (Category cat : listRE) {
+            if (cat.getMontant() != null) if (cat.getMontant() != 0) savingsolde = savingsolde + cat.getAverage() - cat.getMinMontant();
+            //System.out.println("HEREEEE"+savingsolde);
+        }
+
+        return savingsolde;
     }
 
     private Boolean checkcatego() {
@@ -356,18 +385,23 @@ This part is for giving Suggestions
 
     private LocalDate findardharddate(Objective objective) {
         Float amountVar = 0F;
+        Float saved = SavingfromCateg();
+        System.out.println("saved from categories " + saved);
         LocalDate DDF = objective.getPeriodicity().getDateDeb().plusMonths(1);
-        Float fixed = findfixedamount();
+
         while (objective.getAmountTot() > amountVar) {
             amountVar = amountVar + calculsavings(objective, DDF);
-            amountVar = amountVar + fixed;
+            System.out.println("amountvar" + amountVar);
+            amountVar = amountVar + saved;
             DDF = DDF.plusMonths(1);
         }
         return DDF;
     }
 
     private Float finperiodSadoHArdhard(Objective objective) {
-        Float totale = objective.getAmountTot() / calculDurations(objective.getPeriodicity().getDateDeb(), findardharddate(objective))[1];
+        Float totale =
+            (objective.getAmountTot() / calculDurations(objective.getPeriodicity().getDateDeb(), findDateHard(objective))[1]) +
+            SavingfromCateg();
         return totale;
     }
 
@@ -400,9 +434,15 @@ This part is for giving Suggestions
                 objective.getNameIcon(),
                 "Meduim"
             );
-            suggg.add(sugg1);
+            if (
+                objectiveRepository.findByUserLoginAndType(getCurrentUserLoginn(), "Hard").isEmpty() &
+                objectiveRepository.findByUserLoginAndType(getCurrentUserLoginn(), "Meduim").isEmpty()
+            ) suggg.add(sugg1);
+
             LocalDate DatefinMeduim = findDateHard(objective);
+            System.out.println("STEP1");
             Periode period2 = new Periode(objective.getPeriodicity().getDateDeb(), DatefinMeduim, "month");
+            System.out.println("STEP2");
             Objective sugg2 = new Objective(
                 objective.getName(),
                 finperiodSoft(objective),
@@ -414,7 +454,12 @@ This part is for giving Suggestions
                 objective.getNameIcon(),
                 "Soft"
             );
-            suggg.add(sugg2);
+
+            if (
+                objectiveRepository.findByUserLoginAndType(getCurrentUserLoginn(), "Hard").isEmpty() &
+                objectiveRepository.findByUserLoginAndType(getCurrentUserLoginn(), "Soft").isEmpty()
+            ) suggg.add(sugg2);
+
             LocalDate DatefinHard = findardharddate(objective);
             Periode period3 = new Periode(objective.getPeriodicity().getDateDeb(), DatefinHard, "month");
             Objective sugg3 = new Objective(
@@ -430,7 +475,10 @@ This part is for giving Suggestions
                 objective.getNameIcon(),
                 "Hard"
             );
-            suggg.add(sugg3);
+            if (
+                objectiveRepository.findByUserLoginAndType(getCurrentUserLoginn(), "Meduim").isEmpty() &
+                objectiveRepository.findByUserLoginAndType(getCurrentUserLoginn(), "Soft").isEmpty()
+            ) suggg.add(sugg3);
         }
         return suggg;
     }
